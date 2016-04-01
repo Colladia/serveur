@@ -1,2 +1,4 @@
 .geany
 tmp/
+.idea/
+bin/
