@@ -5,7 +5,7 @@
 # functions
 #------------------------------
 function launch () {
-	java -cp lib/*:bin/: $@
+    java -cp lib/*:bin/: $@
 }
 
 
@@ -14,4 +14,4 @@ function launch () {
 #------------------------------
 cd "$(dirname $0)"
 make
-launch "test.Test"
+launch "mainCt.MainCt"
