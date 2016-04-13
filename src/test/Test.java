@@ -27,12 +27,14 @@ public class Test extends ServerResource {
 	@Get()
 	public String getAccept() {  
 		getResponse().setAccessControlAllowOrigin("*");
+		System.out.println("get");
 		return value;
 	}
 	
 	@Post()
 	public String postAccept(String input) {
 		getResponse().setAccessControlAllowOrigin("*");
+		System.out.println("post, value :"+input);
 		value = input;
 		return value;
 	}
