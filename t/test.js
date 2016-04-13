@@ -1,35 +1,15 @@
-function onClickPostButton (server) {
+function onClickButton () {
     $.ajax({
-        url: "http://"+server+":8182",
-        method: "POST",
-        data: {value : prompt()}
+        url: "http://localhost:8182/test",
+        method: "PUT"
+        //dataType: "json",
+        //data: {mod: "a"}
     })
     .done(function(data) {
-        console.log("POST request --> OK");
+        console.log("OK");
         document.getElementById("get-zone").innerHTML = data;
     })
     .fail(function() {
-        console.log("POST request --> KO");
+        console.log("KO");
     });
 }
-
-function periodicGet (server) {
-    $.ajax({
-        url: "http://"+server+":8182",
-        method: "GET"
-    })
-    .done(function(data) {
-        console.log("GET request --> OK");
-        document.getElementById("get-zone").innerHTML = data;
-    })
-    .fail(function() {
-        console.log("GET request --> KO");
-    })
-    .always(function () {
-        setTimeout(periodicGet, 500, server);
-    });
-}
-
-var server = "localhost";
-//var server = prompt("server adress");
-periodicGet(server);

@@ -25,7 +25,7 @@ public class JSON {
         try {
             jsonString = mapper.writeValueAsString(map);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
         return jsonString;
     }
@@ -37,8 +37,12 @@ public class JSON {
         try {
             map = mapper.readValue(serialized, new TypeReference<Map<String, String>>(){});
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
         return map;
+    }
+    
+    public static Boolean isObject(String jsonString) {
+        return jsonString.startsWith("{", 0);
     }
 }

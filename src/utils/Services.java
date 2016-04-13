@@ -23,7 +23,7 @@ public class Services {
         try {
             DFService.register(agent, dfad);
         } catch (FIPAException e) {
-            e.printStackTrace();
+            System.err.println(e);
         }
     }
     
@@ -39,8 +39,8 @@ public class Services {
         
         try {
             serviceList = DFService.search(agent, template);
-        } catch(FIPAException fe) {
-            fe.printStackTrace();
+        } catch(FIPAException e) {
+            System.err.println(e);
         }
         
         AID[] AIDList = new AID[serviceList.length];
