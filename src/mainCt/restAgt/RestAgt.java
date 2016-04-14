@@ -1,5 +1,8 @@
 package mainCt.restAgt;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import jade.core.Agent;
 import jade.core.AID;
 import jade.core.Profile;
@@ -35,5 +38,14 @@ public class RestAgt extends Agent {
         catch(jade.wrapper.StaleProxyException e){
             throw new RuntimeException("Diagram name already exists");
         }
+    }
+    
+    // create a new element and sets its propreties
+    public void addNewElement(String[] path, Map<String, String> propertyMap) {
+        
+    }
+    
+    public void test(String queryId, String str) {
+        RestServer.returnQueue.put(queryId, str);
     }
 }

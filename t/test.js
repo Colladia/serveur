@@ -1,7 +1,7 @@
 function onClickButton () {
     $.ajax({
         url: "http://localhost:8182/test",
-        method: "PUT"
+        method: "GET"
         //dataType: "json",
         //data: {mod: "a"}
     })

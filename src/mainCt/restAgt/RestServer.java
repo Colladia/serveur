@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.UUID;
+import java.util.Timer;
+import java.util.function.Function;
 import java.net.URLDecoder;
 import java.io.UnsupportedEncodingException;
 
@@ -26,6 +29,7 @@ import mainCt.restAgt.RestAgt;
 
 public class RestServer extends ServerResource {
     private static RestAgt restAgt = null;
+    public static Map<String, String> returnQueue = new HashMap<String, String>();
     
     // launch the restlet server
     public static void launchServer(RestAgt agent) {
@@ -40,7 +44,7 @@ public class RestServer extends ServerResource {
         }
     }
     
-    public static Map<String, String> getQueryMap(Reference ref) {
+    public Map<String, String> getQueryMap(Reference ref) {
         String query = ref.getQuery();
         if (query == null) {
             return null;
@@ -55,12 +59,24 @@ public class RestServer extends ServerResource {
         return new Form(query).getValuesMap();
     }
     
-    public static String[] getSplitPath(Reference ref) {
+    public String[] getSplitPath(Reference ref) {
         String[] splitPath = ref.getPath().substring(1).split("/");
         if (splitPath.length < 1) {
             throw new RuntimeException("No diagram specified");
         }
         return splitPath;
+    }
+    
+    // make a query to the rest agent and wait the result in returnQueue
+    public String queryAgt(Function<Map<String, Object>, Boolean> callable, Map<String, Object> args) {
+        String queryId = UUID.randomUUID().toString();
+        args.put("queryId", queryId);
+        
+        callable.apply(args);
+        
+        while (!returnQueue.containsKey(queryId)) {}
+        
+        return returnQueue.get(queryId);
     }
     
     // allow PUT, DELETE, GET and POST methods
@@ -104,16 +120,26 @@ public class RestServer extends ServerResource {
     @Get()
     public String restGet() {  
         getResponse().setAccessControlAllowOrigin("*");
-        Reference ref = getReference();
+        //Reference ref = getReference();
         
-        try {
-            String[] splitPath = getSplitPath(ref);
-            Map<String, String> queryMap = getQueryMap(ref);
-        }
-        catch (RuntimeException re) {
-            return re.getMessage();
-        }
+        //try {
+            //String[] splitPath = getSplitPath(ref);
+            //Map<String, String> queryMap = getQueryMap(ref);
+        //}
+        //catch (RuntimeException re) {
+            //return re.getMessage();
+        //}
         
-        return "OK";
+        Function<Map<String, Object>, Boolean> functionRef = new Function<Map<String, Object>, Boolean>() {
+            public Boolean apply(Map<String, Object> args) {
+                restAgt.test((String)args.get("queryId"), (String)args.get("str"));
+                return true;
+            }
+        };
+        
+        Map<String, Object> args = new HashMap<>();
+        args.put("str", "Hello World !");
+        
+        return queryAgt(functionRef, args);
     }
 }
