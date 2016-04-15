@@ -1,13 +1,35 @@
-function onClickButton () {
+var server = "http://localhost:8182/";
+
+function onClickGetButton () {
+    var path = document.getElementsByName("GetPath")[0].value;
+    
     $.ajax({
-        url: "http://localhost:8182/test",
+        url: server+path,
         method: "GET"
-        //dataType: "json",
-        //data: {mod: "a"}
     })
     .done(function(data) {
         console.log("OK");
         document.getElementById("get-zone").innerHTML = data;
+    })
+    .fail(function() {
+        console.log("KO");
+    });
+}
+
+
+function onClickPutButton () {
+    var path = document.getElementsByName("PutPath")[0].value;
+    var properties = document.getElementsByName("PutProperties")[0].value;
+    
+    $.ajax({
+        url: server+path,
+        method: "PUT",
+        dataType: "text",
+        //data: {"properties": properties}
+    })
+    .done(function(data) {
+        console.log("OK");
+        document.getElementById("put-zone").innerHTML = data;
     })
     .fail(function() {
         console.log("KO");

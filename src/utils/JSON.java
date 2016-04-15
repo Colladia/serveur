@@ -2,6 +2,8 @@ package utils;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -44,5 +46,29 @@ public class JSON {
     
     public static Boolean isObject(String jsonString) {
         return jsonString.startsWith("{", 0);
+    }
+    
+    public static String serializeStringList(List<String> array) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+        
+        try {
+            jsonString = mapper.writeValueAsString(array);
+        } catch (JsonProcessingException e) {
+            System.err.println(e);
+        }
+        return jsonString;
+    }
+    
+    public static List<String> deserializeStringList (String serialized) {
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> array = null;
+
+        try {
+            array = mapper.readValue(serialized, new TypeReference<List<String>>(){});
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        return array;
     }
 }

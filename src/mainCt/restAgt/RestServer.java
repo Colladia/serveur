@@ -1,13 +1,15 @@
 package mainCt.restAgt;
 
 import java.lang.String;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
-import java.util.Timer;
-import java.util.function.Function;
+import java.lang.Thread;
 import java.net.URLDecoder;
 import java.io.UnsupportedEncodingException;
 
@@ -25,6 +27,8 @@ import org.restlet.resource.Delete;
 import org.restlet.resource.Options;
 import org.restlet.resource.ServerResource;
 
+import utils.JSON;
+import utils.Messaging;
 import mainCt.restAgt.RestAgt;
 
 public class RestServer extends ServerResource {
@@ -47,7 +51,7 @@ public class RestServer extends ServerResource {
     public Map<String, String> getQueryMap(Reference ref) {
         String query = ref.getQuery();
         if (query == null) {
-            return null;
+            return new HashMap<>();
         }
         
         try {
@@ -56,27 +60,16 @@ public class RestServer extends ServerResource {
         catch (Exception e) {
             throw new RuntimeException("Unable to decode query");
         }
+        
         return new Form(query).getValuesMap();
     }
     
-    public String[] getSplitPath(Reference ref) {
-        String[] splitPath = ref.getPath().substring(1).split("/");
-        if (splitPath.length < 1) {
+    public List<String> getSplitPath(Reference ref) {
+        List<String> splitPath = Arrays.asList(ref.getPath().substring(1).split("/"));
+        if (splitPath.size() < 1) {
             throw new RuntimeException("No diagram specified");
         }
         return splitPath;
-    }
-    
-    // make a query to the rest agent and wait the result in returnQueue
-    public String queryAgt(Function<Map<String, Object>, Boolean> callable, Map<String, Object> args) {
-        String queryId = UUID.randomUUID().toString();
-        args.put("queryId", queryId);
-        
-        callable.apply(args);
-        
-        while (!returnQueue.containsKey(queryId)) {}
-        
-        return returnQueue.get(queryId);
     }
     
     // allow PUT, DELETE, GET and POST methods
@@ -97,49 +90,58 @@ public class RestServer extends ServerResource {
         getResponse().setAccessControlAllowOrigin("*");
         Reference ref = getReference();
         
-        String[] splitPath = null;
+        List<String> splitPath = null;
+        Map<String, String> queryMap = null;
         try {
             splitPath = getSplitPath(ref);
+            queryMap = getQueryMap(ref);
             
-            if (splitPath.length == 1) {
+            if (splitPath.size() == 1) {
                 // create new diagram
-                restAgt.addNewDiagram(splitPath[0]);
+                restAgt.addNewDiagram(splitPath.get(0));
+                return "New diagram '"+splitPath.get(0)+"' added";
             }
             else {
                 // add new element
+                String queryId = UUID.randomUUID().toString();
                 
+                String propertyMapSerialized = "{}";
+                if (queryMap.containsKey(Messaging.PROPERTIES)) {
+                    propertyMapSerialized = queryMap.get(Messaging.PROPERTIES);
+                }
+                
+                restAgt.addNewElement(queryId, splitPath, propertyMapSerialized);
+                
+                int i = 0;
+                while (!returnQueue.containsKey(queryId)) {
+                    try {
+                        Thread.sleep(5);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return returnQueue.remove(queryId);
             }
         }
         catch (RuntimeException re) {
             return re.getMessage();
         }
-        
-        return "OK";
     }
     
     @Get()
     public String restGet() {  
         getResponse().setAccessControlAllowOrigin("*");
-        //Reference ref = getReference();
+        Reference ref = getReference();
         
-        //try {
-            //String[] splitPath = getSplitPath(ref);
-            //Map<String, String> queryMap = getQueryMap(ref);
-        //}
-        //catch (RuntimeException re) {
-            //return re.getMessage();
-        //}
-        
-        Function<Map<String, Object>, Boolean> functionRef = new Function<Map<String, Object>, Boolean>() {
-            public Boolean apply(Map<String, Object> args) {
-                restAgt.test((String)args.get("queryId"), (String)args.get("str"));
-                return true;
-            }
-        };
-        
-        Map<String, Object> args = new HashMap<>();
-        args.put("str", "Hello World !");
-        
-        return queryAgt(functionRef, args);
+        try {
+            List<String> splitPath = getSplitPath(ref);
+            Map<String, String> queryMap = getQueryMap(ref);
+            
+            return ""+splitPath;
+        }
+        catch (RuntimeException re) {
+            return re.getMessage();
+        }
     }
 }
