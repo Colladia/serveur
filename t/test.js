@@ -25,7 +25,8 @@ function onClickPutButton () {
         url: server+path,
         method: "PUT",
         dataType: "text",
-        //data: {"properties": properties}
+        contentType: "application/json",
+        data: {"properties": properties}
     })
     .done(function(data) {
         console.log("OK");

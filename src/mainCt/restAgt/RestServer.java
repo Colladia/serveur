@@ -48,6 +48,7 @@ public class RestServer extends ServerResource {
         }
     }
     
+    // retrieve queryMap from reference
     public Map<String, String> getQueryMap(Reference ref) {
         String query = ref.getQuery();
         if (query == null) {
@@ -64,6 +65,27 @@ public class RestServer extends ServerResource {
         return new Form(query).getValuesMap();
     }
     
+    // retrieve queryMap from query string
+    public Map<String, String> getQueryMap(String query) {
+        Map<String, String> queryMap = new HashMap<>();
+        
+        try {
+            query = URLDecoder.decode(query, "UTF8");
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Unable to decode query");
+        }
+        
+        String[] split1 = query.split("&");
+        for (String s : split1) {
+            String[] split2 = s.split("=");
+            queryMap.put(split2[0], split2[1]);
+        }
+        
+        return queryMap;
+    }
+    
+    // split the URI
     public List<String> getSplitPath(Reference ref) {
         List<String> splitPath = Arrays.asList(ref.getPath().substring(1).split("/"));
         if (splitPath.size() < 1) {
@@ -83,10 +105,14 @@ public class RestServer extends ServerResource {
         m.add(Method.GET);
         m.add(Method.POST);
         getResponse().setAccessControlAllowMethods(m);
+        
+        Set<String> allowHeaders = getResponse().getAccessControlAllowHeaders();
+        allowHeaders.add("content-type");
+        getResponse().setAccessControlAllowHeaders(allowHeaders);
     }
     
-    @Put()
-    public String restPut() {
+    @Put("json")
+    public String restPut(String query) {
         getResponse().setAccessControlAllowOrigin("*");
         Reference ref = getReference();
         
@@ -94,7 +120,7 @@ public class RestServer extends ServerResource {
         Map<String, String> queryMap = null;
         try {
             splitPath = getSplitPath(ref);
-            queryMap = getQueryMap(ref);
+            queryMap = getQueryMap(query);
             
             if (splitPath.size() == 1) {
                 // create new diagram
