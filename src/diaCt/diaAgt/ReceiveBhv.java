@@ -30,8 +30,8 @@ public class ReceiveBhv extends CyclicBehaviour{
         if (message != null) {
             Map<String, String> map = JSON.deserializeStringMap(message.getContent());
             
+            // PUT
             if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
-                
                 // add new element
                 Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
                 List<String> path = JSON.deserializeStringList(map.get(Messaging.PATH));
@@ -50,6 +50,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     parentAgt.send(reply);
                 }
             }
+            
         }
         else{
             block();

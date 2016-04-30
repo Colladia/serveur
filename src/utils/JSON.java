@@ -20,6 +20,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 public class JSON {
     
+    public static Boolean isObject(String jsonString) {
+        return jsonString.startsWith("{", 0);
+    }
+    
+    // serialise a Map<String, String> into a json string
     public static String serializeStringMap(Map<String, String> map) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = null;
@@ -32,6 +37,7 @@ public class JSON {
         return jsonString;
     }
     
+    // deserialize a json string into a Map<String, String>
     public static Map<String, String> deserializeStringMap (String serialized) {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> map = null;
@@ -44,10 +50,7 @@ public class JSON {
         return map;
     }
     
-    public static Boolean isObject(String jsonString) {
-        return jsonString.startsWith("{", 0);
-    }
-    
+    // serialize a List<String> into a json string
     public static String serializeStringList(List<String> array) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = null;
@@ -60,6 +63,7 @@ public class JSON {
         return jsonString;
     }
     
+    // deserialize a json string into a List<String>
     public static List<String> deserializeStringList (String serialized) {
         ObjectMapper mapper = new ObjectMapper();
         List<String> array = null;

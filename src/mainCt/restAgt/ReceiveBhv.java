@@ -20,7 +20,8 @@ public class ReceiveBhv extends Behaviour{
         this.parentAgt = parentAgt;
         this.queryId = queryId;
     }
-
+    
+    // wait a query response from a DiaAgt
     @Override
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchConversationId(queryId);

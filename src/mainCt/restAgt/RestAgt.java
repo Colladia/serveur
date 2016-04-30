@@ -78,8 +78,4 @@ public class RestAgt extends Agent {
         
         addBehaviour(new ReceiveBhv(this, queryId));
     }
-    
-    public void test(String queryId, String str) {
-        RestServer.returnQueue.put(queryId, str);
-    }
 }

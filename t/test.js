@@ -17,7 +17,7 @@ function onClickGetButton () {
 }
 
 
-function onClickPutButton () {
+function onClickPutEltButton () {
     var path = document.getElementsByName("PutPath")[0].value;
     var properties = document.getElementsByName("PutProperties")[0].value;
     
@@ -27,6 +27,24 @@ function onClickPutButton () {
         dataType: "text",
         contentType: "application/json",
         data: {"properties": properties}
+    })
+    .done(function(data) {
+        console.log("OK");
+        document.getElementById("put-zone").innerHTML = data;
+    })
+    .fail(function() {
+        console.log("KO");
+    });
+}
+
+function onClickPutDiaButton () {
+    var path = document.getElementsByName("PutPath")[0].value;
+    var properties = document.getElementsByName("PutProperties")[0].value;
+    
+    $.ajax({
+        url: server+path,
+        method: "PUT",
+        dataType: "text"
     })
     .done(function(data) {
         console.log("OK");

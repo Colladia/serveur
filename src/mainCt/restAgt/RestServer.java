@@ -1,22 +1,13 @@
 package mainCt.restAgt;
 
-import java.lang.String;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.UUID;
-import java.lang.Thread;
-import java.net.URLDecoder;
-import java.io.UnsupportedEncodingException;
 
 import org.restlet.Server;
-import org.restlet.Component;
-import org.restlet.util.Series;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -30,6 +21,7 @@ import org.restlet.resource.ServerResource;
 import utils.JSON;
 import utils.Messaging;
 import mainCt.restAgt.RestAgt;
+import mainCt.restAgt.RestUtils;
 
 public class RestServer extends ServerResource {
     private static RestAgt restAgt = null;
@@ -48,57 +40,12 @@ public class RestServer extends ServerResource {
         }
     }
     
-    // retrieve queryMap from reference
-    public Map<String, String> getQueryMap(Reference ref) {
-        String query = ref.getQuery();
-        if (query == null) {
-            return new HashMap<>();
-        }
-        
-        try {
-            query = URLDecoder.decode(query, "UTF8");
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Unable to decode query");
-        }
-        
-        return new Form(query).getValuesMap();
-    }
-    
-    // retrieve queryMap from query string
-    public Map<String, String> getQueryMap(String query) {
-        Map<String, String> queryMap = new HashMap<>();
-        
-        try {
-            query = URLDecoder.decode(query, "UTF8");
-        }
-        catch (Exception e) {
-            throw new RuntimeException("Unable to decode query");
-        }
-        
-        String[] split1 = query.split("&");
-        for (String s : split1) {
-            String[] split2 = s.split("=");
-            queryMap.put(split2[0], split2[1]);
-        }
-        
-        return queryMap;
-    }
-    
-    // split the URI
-    public List<String> getSplitPath(Reference ref) {
-        List<String> splitPath = Arrays.asList(ref.getPath().substring(1).split("/"));
-        if (splitPath.size() < 1) {
-            throw new RuntimeException("No diagram specified");
-        }
-        return splitPath;
-    }
-    
-    // allow PUT, DELETE, GET and POST methods
     @Options()
     public void restOptions() {
+        // allow origin "*"
         getResponse().setAccessControlAllowOrigin("*");
         
+        // allow PUT, DELETE, GET and POST methods
         Set<Method> m = new HashSet();
         m.add(Method.PUT);
         m.add(Method.DELETE);
@@ -106,6 +53,7 @@ public class RestServer extends ServerResource {
         m.add(Method.POST);
         getResponse().setAccessControlAllowMethods(m);
         
+        // allow json content-type
         Set<String> allowHeaders = getResponse().getAccessControlAllowHeaders();
         allowHeaders.add("content-type");
         getResponse().setAccessControlAllowHeaders(allowHeaders);
@@ -119,8 +67,8 @@ public class RestServer extends ServerResource {
         List<String> splitPath = null;
         Map<String, String> queryMap = null;
         try {
-            splitPath = getSplitPath(ref);
-            queryMap = getQueryMap(query);
+            splitPath = RestUtils.getSplitPath(ref);
+            queryMap = RestUtils.getQueryMap(query);
             
             if (splitPath.size() == 1) {
                 // create new diagram
@@ -161,8 +109,8 @@ public class RestServer extends ServerResource {
         Reference ref = getReference();
         
         try {
-            List<String> splitPath = getSplitPath(ref);
-            Map<String, String> queryMap = getQueryMap(ref);
+            List<String> splitPath = RestUtils.getSplitPath(ref);
+            Map<String, String> queryMap = RestUtils.getQueryMap(ref);
             
             return ""+splitPath;
         }
