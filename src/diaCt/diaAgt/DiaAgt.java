@@ -10,10 +10,10 @@ import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
 import utils.Services;
+import utils.JSON;
 
 public class DiaAgt extends Agent {
-    public Map<String, String> propertyMap = new HashMap<String, String>();
-    public Map<String, DiaElt> subEltMap = new HashMap<String, DiaElt>();
+    public DiaElt rootElt = new DiaElt(new HashMap<String, String>());
     public String diaName = null;
     
     protected void setup() {
@@ -24,31 +24,26 @@ public class DiaAgt extends Agent {
     }
     
     // create a new element and sets its propreties
-    public void addNewElement(List<String> path, Map<String, String> propertyMap) {
-        if (path.size() > 1) {
-            if (this.subEltMap.containsKey(path.get(0))) {
-                DiaElt curElt = this.subEltMap.get(path.get(0));
-                String pathString = path.get(0);
-                
-                int i;
-                for (i=1; i<path.size()-1; i++) {
-                    pathString+="/"+path.get(i);
-                    if (curElt.subEltMap.containsKey(path.get(i))) {
-                        curElt = curElt.subEltMap.get(path.get(i));
-                    }
-                    else {
-                        throw new RuntimeException("Path '"+pathString+"' does not exists in '"+diaName+"'");
-                    }
-                }
-                curElt.subEltMap.put(path.get(i), new DiaElt(propertyMap));
-            }
-            else {
-                throw new RuntimeException("Path '"+path.get(0)+"' does not exists in '"+diaName+"'");
-            }
+    public String addNewElement(List<String> path, Map<String, String> propertyMap) {
+        String newEltName = path.get(path.size()-1);
+        path = path.subList(0, path.size()-1);
+        
+        DiaElt parentElt = rootElt.retrieveElt(path);
+        if (parentElt.subEltMap.containsKey(newEltName)) {
+            // element already exists, just send back its content
+            propertyMap = parentElt.subEltMap.get(newEltName).propertyMap;
         }
         else {
-            // add new elt in diaAgt
-            this.subEltMap.put(path.get(0), new DiaElt(propertyMap));
+            // element does not exists, add it
+            parentElt.subEltMap.put(newEltName, new DiaElt(propertyMap));
         }
+        return JSON.serializeStringMap(propertyMap);
     }
+    
+    // retrieve the property string of an element
+    public String getElementDescription(List<String> path) {
+        DiaElt elt = rootElt.retrieveElt(path);
+        return elt.getDescription();
+    }
+    
 }

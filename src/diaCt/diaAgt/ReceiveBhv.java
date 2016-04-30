@@ -28,29 +28,45 @@ public class ReceiveBhv extends CyclicBehaviour{
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage message = parentAgt.receive(mt);
         if (message != null) {
-            Map<String, String> map = JSON.deserializeStringMap(message.getContent());
-            
-            // PUT
-            if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
-                // add new element
-                Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
+            try {
+                Map<String, String> map = JSON.deserializeStringMap(message.getContent());
                 List<String> path = JSON.deserializeStringList(map.get(Messaging.PATH));
-                try {
-                    parentAgt.addNewElement(path, propertyMap);
+                
+                // PUT : add new element
+                if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
+                    Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
+                    
+                    String desc = parentAgt.addNewElement(path, propertyMap);
                     
                     ACLMessage reply = message.createReply();
                     reply.setPerformative(ACLMessage.INFORM);
-                    reply.setContent(message.getContent());
+                    
+                    map.put(Messaging.PROPERTIES, desc);
+                    reply.setContent(JSON.serializeStringMap(map));
+                    
                     parentAgt.send(reply);
                 }
-                catch (RuntimeException re) {
+                
+                // GET : get element description
+                else if (map.get(Messaging.TYPE).equals(Method.GET.toString())) {
+                    String desc = parentAgt.getElementDescription(path);
                     ACLMessage reply = message.createReply();
-                    reply.setPerformative(ACLMessage.FAILURE);
-                    reply.setContent(re.getMessage());
+                    
+                    reply.setPerformative(ACLMessage.INFORM);
+                    
+                    map.put(Messaging.PROPERTIES, desc);
+                    reply.setContent(JSON.serializeStringMap(map));
+                    
                     parentAgt.send(reply);
                 }
+                
             }
-            
+            catch (RuntimeException re) {
+                ACLMessage reply = message.createReply();
+                reply.setPerformative(ACLMessage.FAILURE);
+                reply.setContent(re.getMessage());
+                parentAgt.send(reply);
+            }
         }
         else{
             block();

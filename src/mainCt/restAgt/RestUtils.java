@@ -9,6 +9,8 @@ import java.net.URLDecoder;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 
+import utils.Messaging;
+
 public class RestUtils {
     // retrieve queryMap from reference
     public static Map<String, String> getQueryMap(Reference ref) {
@@ -56,5 +58,14 @@ public class RestUtils {
             throw new RuntimeException("No diagram specified");
         }
         return splitPath;
+    }
+    
+    // get property map from query map
+    public static String getPropertyMap(Map<String, String> queryMap) {
+        String propertyMapSerialized = "{}";
+        if (queryMap.containsKey(Messaging.PROPERTIES)) {
+            propertyMapSerialized = queryMap.get(Messaging.PROPERTIES);
+        }
+        return propertyMapSerialized;
     }
 }

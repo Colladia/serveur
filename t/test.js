@@ -17,7 +17,7 @@ function onClickGetButton () {
 }
 
 
-function onClickPutEltButton () {
+function onClickPutPropButton () {
     var path = document.getElementsByName("PutPath")[0].value;
     var properties = document.getElementsByName("PutProperties")[0].value;
     
@@ -37,7 +37,7 @@ function onClickPutEltButton () {
     });
 }
 
-function onClickPutDiaButton () {
+function onClickPutButton () {
     var path = document.getElementsByName("PutPath")[0].value;
     var properties = document.getElementsByName("PutProperties")[0].value;
     

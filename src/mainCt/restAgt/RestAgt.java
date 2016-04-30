@@ -36,6 +36,18 @@ public class RestAgt extends Agent {
         RestServer.launchServer(this);
     }
     
+    // retrieve the AID of a diagram from its name or throw an error
+    public AID getDiagram(String diaName) {
+        AID[] services = Services.getAgentsByService(this, "Diagram", diaName);
+        
+        if (services.length > 0) {
+            return services[0];
+        }
+        else {
+            throw new RuntimeException("Diagram '"+diaName+"' does not exists");
+        }
+    }
+    
     // create a new diagram container and its agents
     public void addNewDiagram(String name) {
         try{
@@ -54,26 +66,35 @@ public class RestAgt extends Agent {
         
         String diaName = path.get(0);
         path = path.subList(1, path.size());
-        
-        AID[] services = Services.getAgentsByService(this, "Diagram", diaName);
-        
-        if (services.length > 0) {
-            message.addReceiver(services[0]);
-        }
-        else {
-            throw new RuntimeException("Diagram '"+diaName+"' does not exists");
-        }
+        message.addReceiver(getDiagram(diaName));
         
         Map<String, String> map = new HashMap<>();
-        
         map.put(Messaging.TYPE, Method.PUT.toString());
-        
         map.put(Messaging.PATH, JSON.serializeStringList(path));
         map.put(Messaging.PROPERTIES, propertyMapSerialized);
+        
         message.setContent(JSON.serializeStringMap(map));
-        
         message.setConversationId(queryId);
+        this.send(message);
         
+        addBehaviour(new ReceiveBhv(this, queryId));
+    }
+    
+    // retrieve the complete element description
+    public void getElementDescription(String queryId, List<String> path) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        
+        String diaName = path.get(0);
+        path = path.subList(1, path.size());
+        message.addReceiver(getDiagram(diaName));
+        
+        Map<String, String> map = new HashMap<>();
+        map.put(Messaging.TYPE, Method.GET.toString());
+        map.put(Messaging.PATH, JSON.serializeStringList(path));
+        //map.put(Messaging.PROPERTIES, propertyMapSerialized);
+        
+        message.setContent(JSON.serializeStringMap(map));
+        message.setConversationId(queryId);
         this.send(message);
         
         addBehaviour(new ReceiveBhv(this, queryId));

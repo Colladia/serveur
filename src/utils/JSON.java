@@ -19,11 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class JSON {
-    
-    public static Boolean isObject(String jsonString) {
-        return jsonString.startsWith("{", 0);
-    }
-    
     // serialise a Map<String, String> into a json string
     public static String serializeStringMap(Map<String, String> map) {
         ObjectMapper mapper = new ObjectMapper();
@@ -31,8 +26,9 @@ public class JSON {
         
         try {
             jsonString = mapper.writeValueAsString(map);
-        } catch (JsonProcessingException e) {
-            System.err.println(e);
+        }
+        catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
         }
         return jsonString;
     }
@@ -44,8 +40,9 @@ public class JSON {
 
         try {
             map = mapper.readValue(serialized, new TypeReference<Map<String, String>>(){});
-        } catch (IOException e) {
-            System.err.println(e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
         }
         return map;
     }
@@ -57,8 +54,9 @@ public class JSON {
         
         try {
             jsonString = mapper.writeValueAsString(array);
-        } catch (JsonProcessingException e) {
-            System.err.println(e);
+        }
+        catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
         }
         return jsonString;
     }
@@ -70,8 +68,9 @@ public class JSON {
 
         try {
             array = mapper.readValue(serialized, new TypeReference<List<String>>(){});
-        } catch (IOException e) {
-            System.err.println(e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
         }
         return array;
     }

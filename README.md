@@ -13,6 +13,10 @@
     - `<addr>/<diagram>/<element>/<element>` --> création d'un sous élément
     - input : `properties=<properties as json>`
     - output : `{path:<path as json array>, type:PUT, properties:<properties as json>}`
+    
+#### GET :
+- `<adrr>/<diagram>` --> recupère recursivement le contenu des propriétés et des sous-éléments
+    - output : `{path:<path as json array>, type:GET, properties:<properties and sub elements as json>}`
 
 ---
 

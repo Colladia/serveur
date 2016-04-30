@@ -19,7 +19,6 @@ import org.restlet.resource.Options;
 import org.restlet.resource.ServerResource;
 
 import utils.JSON;
-import utils.Messaging;
 import mainCt.restAgt.RestAgt;
 import mainCt.restAgt.RestUtils;
 
@@ -38,6 +37,19 @@ public class RestServer extends ServerResource {
                 System.err.println(e);
             }
         }
+    }
+    
+    // wait the reply of a request
+    public String waitReply(String queryId) {
+        while (!returnQueue.containsKey(queryId)) {
+            try {
+                Thread.sleep(5);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return returnQueue.remove(queryId);
     }
     
     @Options()
@@ -78,24 +90,10 @@ public class RestServer extends ServerResource {
             else {
                 // add new element
                 String queryId = UUID.randomUUID().toString();
-                
-                String propertyMapSerialized = "{}";
-                if (queryMap.containsKey(Messaging.PROPERTIES)) {
-                    propertyMapSerialized = queryMap.get(Messaging.PROPERTIES);
-                }
-                
+                String propertyMapSerialized = RestUtils.getPropertyMap(queryMap);
                 restAgt.addNewElement(queryId, splitPath, propertyMapSerialized);
                 
-                int i = 0;
-                while (!returnQueue.containsKey(queryId)) {
-                    try {
-                        Thread.sleep(5);
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                return returnQueue.remove(queryId);
+                return waitReply(queryId);
             }
         }
         catch (RuntimeException re) {
@@ -108,11 +106,16 @@ public class RestServer extends ServerResource {
         getResponse().setAccessControlAllowOrigin("*");
         Reference ref = getReference();
         
+        List<String> splitPath = null;
+        //Map<String, String> queryMap = null; // to use when timestamp
         try {
-            List<String> splitPath = RestUtils.getSplitPath(ref);
-            Map<String, String> queryMap = RestUtils.getQueryMap(ref);
+            splitPath = RestUtils.getSplitPath(ref);
+            // queryMap = RestUtils.getQueryMap(ref);
+            String queryId = UUID.randomUUID().toString();
             
-            return ""+splitPath;
+            restAgt.getElementDescription(queryId, splitPath);
+            
+            return waitReply(queryId);
         }
         catch (RuntimeException re) {
             return re.getMessage();
