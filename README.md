@@ -1,7 +1,18 @@
-# Nom à définir
+# Colladia
 
 ## URI :
-`<address>/<diagram id>[/<element id>]`
+- Diagram : `<address>/<diagram id>`
+- Element : `<address>/<diagram id/<element id>[/<element id> ...]`
+
+---
+
+## Interface :
+#### PUT :
+- <addr>/<diagram> --> création d'un diagramme
+- <addr>/<diagram>/<element> --> création d'un élément dans le diagramme
+    - <addr>/<diagram>/<element>/<element> --> création d'un sous élément
+    - input : properties=<properties as json>
+    - output : {path:<path as json array>, type:PUT, properties:<properties as json>}
 
 ---
 
