@@ -19,6 +19,7 @@ import org.restlet.resource.Options;
 import org.restlet.resource.ServerResource;
 
 import utils.JSON;
+import utils.Messaging;
 import mainCt.restAgt.RestAgt;
 import mainCt.restAgt.RestUtils;
 
@@ -85,7 +86,11 @@ public class RestServer extends ServerResource {
             if (splitPath.size() == 1) {
                 // create new diagram
                 restAgt.addNewDiagram(splitPath.get(0));
-                return "New diagram '"+splitPath.get(0)+"' added";
+                //return "New diagram '"+splitPath.get(0)+"' added";
+                Map<String, String> map = new HashMap<>();
+                map.put(Messaging.TYPE, Method.PUT.toString());
+                map.put(Messaging.PATH, JSON.serializeStringList(splitPath));
+                return JSON.serializeStringMap(map);
             }
             else {
                 // add new element
@@ -114,6 +119,25 @@ public class RestServer extends ServerResource {
             String queryId = UUID.randomUUID().toString();
             
             restAgt.getElementDescription(queryId, splitPath);
+            
+            return waitReply(queryId);
+        }
+        catch (RuntimeException re) {
+            return re.getMessage();
+        }
+    }
+    
+    @Delete()
+    public String restDel() {
+        getResponse().setAccessControlAllowOrigin("*");
+        Reference ref = getReference();
+        
+        List<String> splitPath = null;
+        try {
+            splitPath = RestUtils.getSplitPath(ref);
+            String queryId = UUID.randomUUID().toString();
+            
+            restAgt.rmElement(queryId, splitPath);
             
             return waitReply(queryId);
         }

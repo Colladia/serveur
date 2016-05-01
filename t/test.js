@@ -54,3 +54,19 @@ function onClickPutButton () {
         console.log("KO");
     });
 }
+
+function onClickDelButton () {
+    var path = document.getElementsByName("DelPath")[0].value;
+    
+    $.ajax({
+        url: server+path,
+        method: "DELETE"
+    })
+    .done(function(data) {
+        console.log("OK");
+        document.getElementById("del-zone").innerHTML = data;
+    })
+    .fail(function() {
+        console.log("KO");
+    });
+}

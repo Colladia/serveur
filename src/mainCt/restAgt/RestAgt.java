@@ -48,16 +48,35 @@ public class RestAgt extends Agent {
         }
     }
     
-    // create a new diagram container and its agents
-    public void addNewDiagram(String name) {
-        try{
+    // create a new diagram agent
+    public void addNewDiagram(String diaName) {
+        try {
             // create DiaAgt
-            AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+name, "diaCt.diaAgt.DiaAgt", null);
+            AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
             agentCc.start();
         }
-        catch(Exception e){
-            throw new RuntimeException("Diagram '"+name+"' already exists");
+        catch(Exception e) {
+            throw new RuntimeException("Diagram '"+diaName+"' already exists");
         }
+    }
+    
+    // remove an element or a diagram
+    public void rmElement(String queryId, List<String> path) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        
+        String diaName = path.get(0);
+        //path = path.subList(1, path.size());
+        message.addReceiver(getDiagram(diaName));
+        
+        Map<String, String> map = new HashMap<>();
+        map.put(Messaging.TYPE, Method.DELETE.toString());
+        map.put(Messaging.PATH, JSON.serializeStringList(path));
+        
+        message.setContent(JSON.serializeStringMap(map));
+        message.setConversationId(queryId);
+        this.send(message);
+        
+        addBehaviour(new ReceiveBhv(this, queryId));
     }
     
     // create a new element and sets its propreties
@@ -65,7 +84,7 @@ public class RestAgt extends Agent {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         
         String diaName = path.get(0);
-        path = path.subList(1, path.size());
+        //path = path.subList(1, path.size());
         message.addReceiver(getDiagram(diaName));
         
         Map<String, String> map = new HashMap<>();
@@ -85,7 +104,7 @@ public class RestAgt extends Agent {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         
         String diaName = path.get(0);
-        path = path.subList(1, path.size());
+        //path = path.subList(1, path.size());
         message.addReceiver(getDiagram(diaName));
         
         Map<String, String> map = new HashMap<>();

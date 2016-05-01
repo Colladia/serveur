@@ -30,7 +30,8 @@ public class ReceiveBhv extends CyclicBehaviour{
         if (message != null) {
             try {
                 Map<String, String> map = JSON.deserializeStringMap(message.getContent());
-                List<String> path = JSON.deserializeStringList(map.get(Messaging.PATH));
+                List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
+                List<String> path = completePath.subList(1, completePath.size());
                 
                 // PUT : add new element
                 if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
@@ -55,6 +56,25 @@ public class ReceiveBhv extends CyclicBehaviour{
                     reply.setPerformative(ACLMessage.INFORM);
                     
                     map.put(Messaging.DESCRIPTION, desc);
+                    reply.setContent(JSON.serializeStringMap(map));
+                    
+                    parentAgt.send(reply);
+                }
+                
+                // DELETE : remove the entire diagram or an element and its sub-elements
+                else if (map.get(Messaging.TYPE).equals(Method.DELETE.toString())) {
+                    if (completePath.size() == 1) {
+                        // stop the current diagram
+                        parentAgt.doDelete();
+                    }
+                    else {
+                        // remove element
+                        parentAgt.rmElement(path);
+                    }
+                    
+                    ACLMessage reply = message.createReply();
+                    
+                    reply.setPerformative(ACLMessage.INFORM);
                     reply.setContent(JSON.serializeStringMap(map));
                     
                     parentAgt.send(reply);

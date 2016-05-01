@@ -46,4 +46,18 @@ public class DiaAgt extends Agent {
         return elt.getDescription();
     }
     
+    // remove an element
+    public void rmElement(List<String> path) {
+        String toRemove = path.get(path.size()-1);
+        path = path.subList(0, path.size()-1);
+        
+        DiaElt elt = rootElt.retrieveElt(path);
+        if (elt.subEltMap.containsKey(toRemove)) {
+            elt.subEltMap.remove(toRemove);
+        }
+        else {
+            throw new RuntimeException("Path '"+path+"/"+toRemove+"' does not exists");
+        }
+    }
+    
 }
