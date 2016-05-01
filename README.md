@@ -11,12 +11,16 @@
 - `<addr>/<diagram>` --> création d'un diagramme
 - `<addr>/<diagram>/<element>` --> création d'un élément dans le diagramme
     - `<addr>/<diagram>/<element>/<element>` --> création d'un sous élément
-    - input : `properties=<properties as json>`
-    - output : `{path:<path as json array>, type:PUT, properties:<properties as json>}`
+    - input : `description=<properties as json>`
+    - output : `{path:<path as json array>, type:PUT, description:<properties as json>}`
     
 #### GET :
-- `<adrr>/<diagram>` --> recupère recursivement le contenu des propriétés et des sous-éléments
-    - output : `{path:<path as json array>, type:GET, properties:<properties and sub elements as json>}`
+- `<adrr>/<diagram>[/<element> ...]` --> recupère recursivement le contenu des propriétés et des sous-éléments
+    - output : `{path:<path as json array>, type:GET, description:<properties and sub elements as json>}`
+    
+#### DELETE :
+- `<adrr>/<diagram>[/<element> ...]` --> suppression d'un diagramme ou d'un élément
+    - output : `{path:<path as json array>, type:DELETE}`
 
 ---
 
