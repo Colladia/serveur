@@ -34,14 +34,14 @@ public class ReceiveBhv extends CyclicBehaviour{
                 
                 // PUT : add new element
                 if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
-                    Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
+                    Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.DESCRIPTION));
                     
                     String desc = parentAgt.addNewElement(path, propertyMap);
                     
                     ACLMessage reply = message.createReply();
                     reply.setPerformative(ACLMessage.INFORM);
                     
-                    map.put(Messaging.PROPERTIES, desc);
+                    map.put(Messaging.DESCRIPTION, desc);
                     reply.setContent(JSON.serializeStringMap(map));
                     
                     parentAgt.send(reply);
@@ -54,7 +54,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     
                     reply.setPerformative(ACLMessage.INFORM);
                     
-                    map.put(Messaging.PROPERTIES, desc);
+                    map.put(Messaging.DESCRIPTION, desc);
                     reply.setContent(JSON.serializeStringMap(map));
                     
                     parentAgt.send(reply);

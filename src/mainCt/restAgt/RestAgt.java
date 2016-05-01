@@ -71,7 +71,7 @@ public class RestAgt extends Agent {
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.PUT.toString());
         map.put(Messaging.PATH, JSON.serializeStringList(path));
-        map.put(Messaging.PROPERTIES, propertyMapSerialized);
+        map.put(Messaging.DESCRIPTION, propertyMapSerialized);
         
         message.setContent(JSON.serializeStringMap(map));
         message.setConversationId(queryId);
