@@ -95,6 +95,7 @@ public class RestServer extends ServerResource {
             else {
                 // add new element
                 String queryId = UUID.randomUUID().toString();
+                
                 String propertyMapSerialized = RestUtils.getPropertyMap(queryMap);
                 restAgt.addNewElement(queryId, splitPath, propertyMapSerialized);
                 

@@ -26,7 +26,7 @@ function onClickPutPropButton () {
         method: "PUT",
         dataType: "text",
         contentType: "application/json",
-        data: {"properties": properties}
+        data: {"description": properties}
     })
     .done(function(data) {
         console.log("OK");
