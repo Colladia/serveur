@@ -30,6 +30,8 @@ public class ReceiveBhv extends CyclicBehaviour{
         if (message != null) {
             try {
                 Map<String, String> map = JSON.deserializeStringMap(message.getContent());
+                map.put(Messaging.STATUS, Messaging.OK);
+                
                 List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
                 List<String> path = completePath.subList(1, completePath.size());
                 

@@ -20,6 +20,7 @@ import jade.wrapper.ContainerController;
 import utils.JSON;
 import utils.Services;
 import utils.Messaging;
+import utils.Errors;
 import mainCt.restAgt.RestServer;
 
 public class RestAgt extends Agent {
@@ -40,12 +41,11 @@ public class RestAgt extends Agent {
     public AID getDiagram(String diaName) {
         AID[] services = Services.getAgentsByService(this, "Diagram", diaName);
         
-        if (services.length > 0) {
-            return services[0];
+        if (services.length <= 0) {
+            Errors.throwKO("Diagram '"+diaName+"' does not exists");
         }
-        else {
-            throw new RuntimeException("Diagram '"+diaName+"' does not exists");
-        }
+
+        return services[0];
     }
     
     // create a new diagram agent
@@ -56,7 +56,7 @@ public class RestAgt extends Agent {
             agentCc.start();
         }
         catch(Exception e) {
-            throw new RuntimeException("Diagram '"+diaName+"' already exists");
+            Errors.throwKO("Diagram '"+diaName+"' already exists");
         }
     }
     

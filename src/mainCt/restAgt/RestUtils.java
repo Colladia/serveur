@@ -10,6 +10,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 
 import utils.Messaging;
+import utils.Errors;
 
 public class RestUtils {
     // retrieve queryMap from reference
@@ -23,7 +24,7 @@ public class RestUtils {
             query = URLDecoder.decode(query, "UTF8");
         }
         catch (Exception e) {
-            throw new RuntimeException("Unable to decode query");
+            Errors.throwKO("Unable to decode query");
         }
         
         return new Form(query).getValuesMap();
@@ -38,7 +39,7 @@ public class RestUtils {
                 query = URLDecoder.decode(query, "UTF8");
             }
             catch (Exception e) {
-                throw new RuntimeException("Unable to decode query");
+                Errors.throwKO("Unable to decode query");
             }
             
             String[] split1 = query.split("&");
@@ -55,7 +56,7 @@ public class RestUtils {
     public static List<String> getSplitPath(Reference ref) {
         List<String> splitPath = Arrays.asList(ref.getPath().substring(1).split("/"));
         if (splitPath.size() < 1) {
-            throw new RuntimeException("No diagram specified");
+            Errors.throwKO("No diagram specified");
         }
         return splitPath;
     }

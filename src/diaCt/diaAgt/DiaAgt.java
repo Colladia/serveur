@@ -23,6 +23,10 @@ public class DiaAgt extends Agent {
         addBehaviour(new ReceiveBhv(this));
     }
     
+    protected void takeDown() {
+        Services.deregisterService(this);
+    }
+    
     // create a new element and sets its propreties
     public String addNewElement(List<String> path, Map<String, String> propertyMap) {
         String newEltName = path.get(path.size()-1);

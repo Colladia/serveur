@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import utils.JSON;
+import utils.Errors;
 
 public class DiaElt {
     public Map<String, String> propertyMap = new HashMap<String, String>();
@@ -25,7 +26,7 @@ public class DiaElt {
                 curElt = curElt.subEltMap.get(path.get(i));
             }
             else {
-                throw new RuntimeException("Path '"+pathString+"' does not exists");
+                Errors.throwKO("Path '"+pathString+"' does not exists");
             }
         }
         return curElt;

@@ -90,6 +90,7 @@ public class RestServer extends ServerResource {
                 Map<String, String> map = new HashMap<>();
                 map.put(Messaging.TYPE, Method.PUT.toString());
                 map.put(Messaging.PATH, JSON.serializeStringList(splitPath));
+                map.put(Messaging.STATUS, Messaging.OK);
                 return JSON.serializeStringMap(map);
             }
             else {

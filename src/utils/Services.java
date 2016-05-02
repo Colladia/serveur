@@ -9,8 +9,17 @@ import jade.domain.FIPAException;
 
 public class Services {
     
+    // deregister agent
+    public static void deregisterService(Agent agent) {
+        try {
+            DFService.deregister(agent);
+        } catch (FIPAException e) {
+            System.err.println(e);
+        }
+    }
+    
     // register an agent description to the DF
-    public static void registerService (Agent agent, String typeService, String nameSpecificService) {
+    public static void registerService(Agent agent, String typeService, String nameSpecificService) {
         DFAgentDescription dfad = new DFAgentDescription();
         dfad.setName(agent.getAID());
 
