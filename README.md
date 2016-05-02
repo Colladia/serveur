@@ -7,6 +7,11 @@
 ---
 
 ## Interface :
+
+#### Global :
+- `status` --> état de la requête (`KO` ou `OK`)
+- `error` --> message d'erreur si `status=KO`
+
 #### PUT :
 - `<addr>/<diagram>` --> création d'un diagramme
 - `<addr>/<diagram>/<element>` --> création d'un élément dans le diagramme
