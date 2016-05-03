@@ -141,16 +141,28 @@ public class RestServer extends ServerResource {
     }
     
     @Delete()
-    public String restDel() {
+    public String restDel(String query) {
         getResponse().setAccessControlAllowOrigin("*");
         Reference ref = getReference();
         
         List<String> splitPath = null;
+        Map<String, String> queryMap = null;
         try {
+            queryMap = RestUtils.getQueryMap(query);
             splitPath = RestUtils.getSplitPath(ref);
             String queryId = UUID.randomUUID().toString();
             
-            restAgt.rmElement(queryId, splitPath);
+            List<String> propertiesList = null;
+            if (queryMap.containsKey(Messaging.PROPERTIES_LIST)) {
+                propertiesList = JSON.deserializeStringList(queryMap.get(Messaging.PROPERTIES_LIST));
+            }
+            
+            if (propertiesList!=null) {
+                restAgt.rmProperties(queryId, splitPath, propertiesList);
+            }
+            else {
+                restAgt.rmElement(queryId, splitPath);
+            }
             
             return waitReply(queryId);
         }

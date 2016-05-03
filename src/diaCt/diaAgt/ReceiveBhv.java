@@ -37,13 +37,14 @@ public class ReceiveBhv extends CyclicBehaviour{
                 
                 // PUT : add new element
                 if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
-                    Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.DESCRIPTION));
+                    Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
                     
                     String desc = parentAgt.addNewElement(path, propertyMap);
                     
                     ACLMessage reply = message.createReply();
                     reply.setPerformative(ACLMessage.INFORM);
                     
+                    map.remove(Messaging.PROPERTIES);
                     map.put(Messaging.DESCRIPTION, desc);
                     reply.setContent(JSON.serializeStringMap(map));
                     
@@ -63,15 +64,22 @@ public class ReceiveBhv extends CyclicBehaviour{
                     parentAgt.send(reply);
                 }
                 
-                // DELETE : remove the entire diagram or an element and its sub-elements
+                // DELETE : remove the entire diagram, an element and its sub-elements or some properties
                 else if (map.get(Messaging.TYPE).equals(Method.DELETE.toString())) {
-                    if (completePath.size() == 1) {
-                        // stop the current diagram
-                        parentAgt.doDelete();
+                    if (map.containsKey(Messaging.PROPERTIES_LIST)) {
+                        // remove properties
+                        parentAgt.rmProperties(path, JSON.deserializeStringList(map.get(Messaging.PROPERTIES_LIST)));
                     }
                     else {
-                        // remove element
-                        parentAgt.rmElement(path);
+                        // remove diagram/element
+                        if (completePath.size() == 1) {
+                            // stop the current diagram
+                            parentAgt.doDelete();
+                        }
+                        else {
+                            // remove element
+                            parentAgt.rmElement(path);
+                        }
                     }
                     
                     ACLMessage reply = message.createReply();

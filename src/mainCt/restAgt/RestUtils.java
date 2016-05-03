@@ -64,8 +64,8 @@ public class RestUtils {
     // get property map from query map
     public static String getPropertyMap(Map<String, String> queryMap) {
         String propertyMapSerialized = "{}";
-        if (queryMap.containsKey(Messaging.DESCRIPTION)) {
-            propertyMapSerialized = queryMap.get(Messaging.DESCRIPTION);
+        if (queryMap.containsKey(Messaging.PROPERTIES)) {
+            propertyMapSerialized = queryMap.get(Messaging.PROPERTIES);
         }
         return propertyMapSerialized;
     }

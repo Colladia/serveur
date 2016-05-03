@@ -89,6 +89,26 @@ public class RestAgt extends Agent {
         addBehaviour(new ReceiveBhv(this, queryId));
     }
     
+    // rm a list of properties from an element
+    public void rmProperties(String queryId, List<String> path, List<String> propertiesList) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        
+        String diaName = path.get(0);
+        //path = path.subList(1, path.size());
+        message.addReceiver(getDiagram(diaName));
+        
+        Map<String, String> map = new HashMap<>();
+        map.put(Messaging.TYPE, Method.DELETE.toString());
+        map.put(Messaging.PATH, JSON.serializeStringList(path));
+        map.put(Messaging.PROPERTIES_LIST, JSON.serializeStringList(propertiesList));
+        
+        message.setContent(JSON.serializeStringMap(map));
+        message.setConversationId(queryId);
+        this.send(message);
+        
+        addBehaviour(new ReceiveBhv(this, queryId));
+    }
+    
     // create a new element and sets its propreties
     public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
@@ -100,7 +120,7 @@ public class RestAgt extends Agent {
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.PUT.toString());
         map.put(Messaging.PATH, JSON.serializeStringList(path));
-        map.put(Messaging.DESCRIPTION, propertyMapSerialized);
+        map.put(Messaging.PROPERTIES, propertyMapSerialized);
         
         message.setContent(JSON.serializeStringMap(map));
         message.setConversationId(queryId);

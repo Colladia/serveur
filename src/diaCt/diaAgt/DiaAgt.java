@@ -11,6 +11,7 @@ import jade.lang.acl.ACLMessage;
 
 import utils.Services;
 import utils.JSON;
+import utils.Errors;
 
 public class DiaAgt extends Agent {
     public DiaElt rootElt = new DiaElt(new HashMap<String, String>());
@@ -60,8 +61,21 @@ public class DiaAgt extends Agent {
             elt.subEltMap.remove(toRemove);
         }
         else {
-            throw new RuntimeException("Path '"+path+"/"+toRemove+"' does not exists");
+            Errors.throwKO("Path '"+String.join("/", path)+"/"+toRemove+"' does not exists");
         }
     }
     
+    // remove some properties of an element
+    public void rmProperties(List<String> path, List<String> propertiesList) {
+        DiaElt elt = rootElt.retrieveElt(path);
+        
+        for (String i : propertiesList) {
+            if (elt.propertyMap.containsKey(i)) {
+                elt.propertyMap.remove(i);
+            }
+            else {
+                Errors.throwKO("Properties '"+i+"' does not exists at '"+String.join("/", path)+"'");
+            }
+        }
+    }
 }
