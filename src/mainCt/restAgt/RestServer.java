@@ -118,11 +118,22 @@ public class RestServer extends ServerResource {
         try {
             splitPath = RestUtils.getSplitPath(ref);
             // queryMap = RestUtils.getQueryMap(ref);
-            String queryId = UUID.randomUUID().toString();
-            
-            restAgt.getElementDescription(queryId, splitPath);
-            
-            return waitReply(queryId);
+            if (splitPath.size()==1 && splitPath.get(0).equals("")) {
+                // return the list of available diagram
+                Map<String, String> map = new HashMap<>();
+                map.put(Messaging.TYPE, Method.GET.toString());
+                map.put(Messaging.LIST, JSON.serializeStringList(restAgt.getDiagramList()));
+                map.put(Messaging.STATUS, Messaging.OK);
+                return JSON.serializeStringMap(map);
+            }
+            else {
+                // get diagram/element description
+                String queryId = UUID.randomUUID().toString();
+                
+                restAgt.getElementDescription(queryId, splitPath);
+                
+                return waitReply(queryId);
+            }
         }
         catch (RuntimeException re) {
             return re.getMessage();

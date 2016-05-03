@@ -43,7 +43,9 @@ public class Services {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType(typeService);
-        sd.setName(nameSpecificService);
+        if (nameSpecificService != null) {
+            sd.setName(nameSpecificService);
+        }
         template.addServices(sd);
         
         try {

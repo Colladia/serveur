@@ -11,21 +11,24 @@
 #### Global :
 - `status` --> état de la requête (`KO` ou `OK`)
 - `error` --> message d'erreur si `status=KO`
+- `type` --> type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
 
 #### PUT :
 - `<addr>/<diagram>` --> création d'un diagramme
 - `<addr>/<diagram>/<element>` --> création d'un élément dans le diagramme
     - `<addr>/<diagram>/<element>/<element>` --> création d'un sous élément
     - input : `description=<properties as json>`
-    - output : `{path:<path as json array>, type:PUT, description:<properties as json>}`
+    - output : `{path:<path as json array>, description:<properties as json>}`
     
 #### GET :
+- `<adrr>` --> récupère la liste des diagrammes
+    - output : `{list:<diagram list as json>}`
 - `<adrr>/<diagram>[/<element> ...]` --> recupère recursivement le contenu des propriétés et des sous-éléments
-    - output : `{path:<path as json array>, type:GET, description:<properties and sub elements as json>}`
+    - output : `{path:<path as json array>, description:<properties and sub elements as json>}`
     
 #### DELETE :
 - `<adrr>/<diagram>[/<element> ...]` --> suppression d'un diagramme ou d'un élément
-    - output : `{path:<path as json array>, type:DELETE}`
+    - output : `{path:<path as json array>}`
 
 ---
 

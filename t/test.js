@@ -1,5 +1,19 @@
 var server = "http://localhost:8182/";
 
+function onClickGetNoPathButton () {
+    $.ajax({
+        url: server,
+        method: "GET"
+    })
+    .done(function(data) {
+        console.log("OK");
+        document.getElementById("get-zone").innerHTML = data;
+    })
+    .fail(function() {
+        console.log("KO");
+    });
+}
+
 function onClickGetButton () {
     var path = document.getElementsByName("GetPath")[0].value;
     
@@ -15,7 +29,6 @@ function onClickGetButton () {
         console.log("KO");
     });
 }
-
 
 function onClickPutPropButton () {
     var path = document.getElementsByName("PutPath")[0].value;

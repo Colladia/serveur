@@ -48,6 +48,16 @@ public class RestAgt extends Agent {
         return services[0];
     }
     
+    // return a list of the diagram names
+    public List<String> getDiagramList() {
+        List<String> r = new ArrayList<>();
+        AID[] AIDList = Services.getAgentsByService(this, "Diagram", null);
+        for (AID i : AIDList) {
+            r.add(i.getLocalName().substring("DiaAgt-".length()));
+        }
+        return r;
+    }
+    
     // create a new diagram agent
     public void addNewDiagram(String diaName) {
         try {
