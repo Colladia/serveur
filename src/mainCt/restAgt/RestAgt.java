@@ -70,6 +70,26 @@ public class RestAgt extends Agent {
         }
     }
     
+    // create a new element and sets its propreties
+    public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        
+        String diaName = path.get(0);
+        //path = path.subList(1, path.size());
+        message.addReceiver(getDiagram(diaName));
+        
+        Map<String, String> map = new HashMap<>();
+        map.put(Messaging.TYPE, Method.PUT.toString());
+        map.put(Messaging.PATH, JSON.serializeStringList(path));
+        map.put(Messaging.PROPERTIES, propertyMapSerialized);
+        
+        message.setContent(JSON.serializeStringMap(map));
+        message.setConversationId(queryId);
+        this.send(message);
+        
+        addBehaviour(new ReceiveBhv(this, queryId));
+    }
+    
     // remove an element or a diagram
     public void rmElement(String queryId, List<String> path) {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
@@ -109,8 +129,7 @@ public class RestAgt extends Agent {
         addBehaviour(new ReceiveBhv(this, queryId));
     }
     
-    // create a new element and sets its propreties
-    public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
+    public void chProperties(String queryId, List<String> path, Map<String, String> propertyMap) {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         
         String diaName = path.get(0);
@@ -118,9 +137,9 @@ public class RestAgt extends Agent {
         message.addReceiver(getDiagram(diaName));
         
         Map<String, String> map = new HashMap<>();
-        map.put(Messaging.TYPE, Method.PUT.toString());
+        map.put(Messaging.TYPE, Method.POST.toString());
         map.put(Messaging.PATH, JSON.serializeStringList(path));
-        map.put(Messaging.PROPERTIES, propertyMapSerialized);
+        map.put(Messaging.PROPERTIES, JSON.serializeStringMap(propertyMap));
         
         message.setContent(JSON.serializeStringMap(map));
         message.setConversationId(queryId);

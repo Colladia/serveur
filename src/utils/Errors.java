@@ -11,6 +11,12 @@ public class Errors {
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.STATUS, Messaging.KO);
         map.put(Messaging.ERROR, msg);
-        throw new RuntimeException(JSON.serializeStringMap(map));
+        
+        RuntimeException re = new RuntimeException(JSON.serializeStringMap(map));
+        
+        // DEBUG
+        re.printStackTrace();
+        
+        throw re;
     }
 }

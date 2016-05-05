@@ -1,11 +1,5 @@
 # Colladia
 
-## URI :
-- Diagram : `<address>/<diagram id>`
-- Element : `<address>/<diagram id/<element id>[/<element id> ...]`
-
----
-
 ## Interface :
 
 #### Global :
@@ -14,41 +8,36 @@
 - `type` --> type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
 
 #### PUT :
-- `<addr>/<diagram>` --> création d'un diagramme
-- `<addr>/<diagram>/<element>` --> création d'un élément dans le diagramme
-    - `<addr>/<diagram>/<element>/<element>` --> création d'un sous élément
-    - input : `properties=<properties as json>`
-    - output : `{path:<path as json array>, description:<properties as json>}`
+- création d'un diagramme :
+    - uri : `<addr>/<diagram>`
+    - output : `{path:<diagram name in json array>}`
+- création d'un sous-élément dans un diagramme/élément :
+    - uri : `<addr>/<diagram>/[<element> ...]/<element>`
+    - input : `properties=<properties as json map>`
+    - output : `{path:<path as json array>, properties:<properties as json map>}`
     
 #### GET :
-- `<adrr>` --> récupère la liste des diagrammes
+- liste des diagrammes disponibles :
+    - uri : `<adrr>`
     - output : `{list:<diagram list as json>}`
-- `<adrr>/<diagram>[/<element> ...]` --> recupère recursivement le contenu des propriétés et des sous-éléments
-    - output : `{path:<path as json array>, description:<properties and sub elements as json>}`
+- récupération de la description (propriétés et descriptions des sous-éléments) d'un diagramme/élément
+    - uri : `<adrr>/<diagram>[/<element> ...]`
+    - output : `{path:<path as json array>, description:<properties and sub elements as json map>}`
     
 #### DELETE :
-- `<adrr>/<diagram>[/<element> ...]` --> suppression recursive d'un diagramme, d'un élément ou de propriétés si l'option `properties-list` est spécifiée
-    - input : `{properties-list:<properties to remove as list>}` (optionel)
+- suppression recursive d'un diagramme ou d'un élément :
+    - uri : `<adrr>/<diagram>[/<element> ...]`
     - output : `{path:<path as json array>}`
-
----
-
-## Méthodes REST :
-#### PUT :
-- Création d'un nouveau diagramme :
-    - Lancement d'un 'component' restlet ?
-    - Création d'un nouveau conteneur de diagramme
-- Création d'un nouvel élément
-
-#### DEL :
-- Suppression d'un élément/diagramme
-
-#### GET :
-- Renvoi la sérialisation JSON de l'élément / du diagramme
-- Si on passe un timestamp, ne renvoi que les modifications qui ont eu lieu depuis
-
+- suppression de propriétés :
+    - uri : `<adrr>/<diagram>[/<element> ...]`
+    - input : `properties-list=<properties to remove as json array>`
+    - output : `{path:<path as json array>, properties-list:<properties removed as json array>}`
+    
 #### POST :
-- Modification d'un ou plusieurs attributs d'un éléments (d'un diagramme ?)
+- modification/ajout de propriétés à un élément :
+    - uri : `<adrr>/<diagram>[/<element> ...]`
+    - input : `properties=<properties to add/modify as json map>`
+    - output : `{path:<path as json array>, properties:<properties added/modified as json map>}`
 
 ---
 

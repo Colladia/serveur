@@ -44,8 +44,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     ACLMessage reply = message.createReply();
                     reply.setPerformative(ACLMessage.INFORM);
                     
-                    map.remove(Messaging.PROPERTIES);
-                    map.put(Messaging.DESCRIPTION, desc);
+                    map.put(Messaging.PROPERTIES, desc);
                     reply.setContent(JSON.serializeStringMap(map));
                     
                     parentAgt.send(reply);
@@ -85,6 +84,20 @@ public class ReceiveBhv extends CyclicBehaviour{
                     ACLMessage reply = message.createReply();
                     
                     reply.setPerformative(ACLMessage.INFORM);
+                    reply.setContent(JSON.serializeStringMap(map));
+                    
+                    parentAgt.send(reply);
+                }
+                
+                // POST : modify properties of an element
+                else if (map.get(Messaging.TYPE).equals(Method.POST.toString())) {
+                    parentAgt.chProperties(path, JSON.deserializeStringMap(map.get(Messaging.PROPERTIES)));
+                    
+                    ACLMessage reply = message.createReply();
+                    
+                    reply.setPerformative(ACLMessage.INFORM);
+                    
+                    //map.put(Messaging.PROPERTIES, desc);
                     reply.setContent(JSON.serializeStringMap(map));
                     
                     parentAgt.send(reply);

@@ -70,12 +70,20 @@ public class DiaAgt extends Agent {
         DiaElt elt = rootElt.retrieveElt(path);
         
         for (String i : propertiesList) {
-            if (elt.propertyMap.containsKey(i)) {
-                elt.propertyMap.remove(i);
-            }
-            else {
-                Errors.throwKO("Properties '"+i+"' does not exists at '"+String.join("/", path)+"'");
-            }
+            elt.propertyMap.remove(i); // do not throw an error if property does not exists
+            //if (elt.propertyMap.containsKey(i)) {
+                //elt.propertyMap.remove(i);
+            //}
+            //else {
+                //Errors.throwKO("Properties '"+i+"' does not exists at '"+String.join("/", path)+"'");
+            //}
         }
+    }
+    
+    // modify properties of an element
+    public void chProperties(List<String> path, Map<String, String> propertyMap) {
+        DiaElt elt = rootElt.retrieveElt(path);
+        
+        elt.propertyMap.putAll(propertyMap);
     }
 }

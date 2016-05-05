@@ -28,6 +28,9 @@ public class JSON {
             jsonString = mapper.writeValueAsString(map);
         }
         catch (JsonProcessingException e) {
+            // DEBUG
+            e.printStackTrace();
+            
             throw new RuntimeException(e.getMessage());
         }
         return jsonString;
@@ -42,6 +45,9 @@ public class JSON {
             map = mapper.readValue(serialized, new TypeReference<Map<String, String>>(){});
         }
         catch (IOException e) {
+            // DEBUG
+            e.printStackTrace();
+            
             throw new RuntimeException(e.getMessage());
         }
         return map;
@@ -56,6 +62,9 @@ public class JSON {
             jsonString = mapper.writeValueAsString(array);
         }
         catch (JsonProcessingException e) {
+            // DEBUG
+            e.printStackTrace();
+            
             throw new RuntimeException(e.getMessage());
         }
         return jsonString;
@@ -70,6 +79,9 @@ public class JSON {
             array = mapper.readValue(serialized, new TypeReference<List<String>>(){});
         }
         catch (IOException e) {
+            // DEBUG
+            e.printStackTrace();
+            
             throw new RuntimeException(e.getMessage());
         }
         return array;

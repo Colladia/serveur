@@ -102,3 +102,22 @@ function onClickDelPropButton () {
         console.log("KO");
     });
 }
+
+function onClickPostButton () {
+    var path = document.getElementsByName("PostPath")[0].value;
+    var properties = document.getElementsByName("PostProperties")[0].value;
+    
+    $.ajax({
+        url: server+path,
+        method: "POST",
+        contentType: "application/json",
+        data: {"properties": properties}
+    })
+    .done(function(data) {
+        console.log("OK");
+        document.getElementById("post-zone").innerHTML = data;
+    })
+    .fail(function() {
+        console.log("KO");
+    });
+}

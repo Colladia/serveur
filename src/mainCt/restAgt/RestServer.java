@@ -72,7 +72,7 @@ public class RestServer extends ServerResource {
         getResponse().setAccessControlAllowHeaders(allowHeaders);
     }
     
-    @Put("json")
+    @Put()
     public String restPut(String query) {
         getResponse().setAccessControlAllowOrigin("*");
         Reference ref = getReference();
@@ -163,6 +163,28 @@ public class RestServer extends ServerResource {
             else {
                 restAgt.rmElement(queryId, splitPath);
             }
+            
+            return waitReply(queryId);
+        }
+        catch (RuntimeException re) {
+            return re.getMessage();
+        }
+    }
+    
+    @Post()
+    public String restPost(String query) {
+        getResponse().setAccessControlAllowOrigin("*");
+        Reference ref = getReference();
+        
+        List<String> splitPath = null;
+        Map<String, String> queryMap = null;
+        try {
+            queryMap = RestUtils.getQueryMap(query);
+            splitPath = RestUtils.getSplitPath(ref);
+            String queryId = UUID.randomUUID().toString();
+            
+            Map<String, String> propertyMap = JSON.deserializeStringMap(queryMap.get(Messaging.PROPERTIES));
+            restAgt.chProperties(queryId, splitPath, propertyMap);
             
             return waitReply(queryId);
         }
