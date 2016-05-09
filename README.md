@@ -2,10 +2,10 @@
 
 ## Interface :
 
-#### Global :
-- `status` --> état de la requête (`KO` ou `OK`)
-- `error` --> message d'erreur si `status=KO`
-- `type` --> type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
+#### Général :
+- status : état de la requête (`KO` ou `OK`)
+- error : message d'erreur si `status=KO`
+- type : type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
 
 #### PUT :
 - création d'un diagramme :
@@ -41,27 +41,66 @@
 
 ---
 
-## Agents :
-#### Agent REST [MainCt] : 
-- Liaison entre le SMA et le serveur restlet
+## Description :
+#### RestAgt + RestServer :
+- chargé de récupérer et de traiter les requêtes REST
+    - les requêtes sont ensuite transférées sous forme d'ACLMessage au DiaAgt correspondant si besoin
+- création des nouveaux diagrammes
+- liste des diagrammes disponibles
 
-#### Agent de sauvegarde [MainCt] :
-- Sauvegarde les informations d'un diagramme sur demande dans un fichier
-- Au lancement du serveur, restore les diagrammes à partir des fichiers
+###### Comportements :
+- RestServer :
+    - != comportement JADE
+    - attente d'une requête d'un client
+- ReceiveBhv :
+    - après envoi d'une requête à un DiaAgt, attente de la réponse
+    - après reception de la réponse et traitement, le résultat est envoyé au client REST
 
-#### Agent de diagramme [DiaCt] :
-- Gestion de l'état actuel du diagramme et de ses éléments
+#### DiaAgt :
+- stocke l'état courant d'un diagramme
+- pour l'instant, les différents éléments, sous-éléments, etc. sont stockés dans une structure récursive
+- implémente les fonctions de recherche, ajout, suppression, modification etc. d'éléments
 
-#### Agent horloge [DiaCt] :
-- Gestion de l'horloge logique du diagramme
+###### Comportements :
+- ReceiveBhv :
+    - attend une requête du RestAgt, la traite et envoi une réponse
 
-#### Agent historique [DiaCt] :
-- Gestion de l'historique des modifications du diagramme
-- Suppression des modifications au bout d'un certain temps ?
-- Tableau cyclique (nombre de modifications conservées limité) ?
+#### EltAgt :
+- différent de DiaAgt ?
+- TODO
+
+#### SaveAgt :
+- TODO
+
+#### ClockAgt :
+- TODO
+
+#### HistAgt :
+- TODO
 
 ---
 
-## Remarques :
-- Chaque fois que le serveur renvoi des informations, il y ajoute le timestamp (horloge logique actuelle du serveur)
-- Toutes les informations sur les éléments sont stockées sous forme de dictionnaires string->string
+## Messages :
+#### Général :
+- content : dictionnaire JSON sérialisé
+    - les champs décrits ci-dessous n'appartenant pas au format ACL sont des champs de ce dictionnaire
+- conversation-id : id unique généré pour chaque requête REST
+
+#### RestAgt + RestServer --> DiaAgt :
+- performatif : `REQUEST`
+- type : `PUT`, `GET`, `DELETE` ou `POST` dépendant du type de la requête REST initiale
+- path : chemin du diagramme/élément visé par la requête
+- properties : liste des propriétés et de leurs valeurs dans le cas d'une modification/création d'un élément
+- properties-list : liste des propriétés à supprimer au sein d'un élément
+
+#### DiaAgt --> RestAgt + RestServer :
+- status : `KO` si une erreur est survenue durant le traitement de la requête, `OK` sinon
+
+###### Succès :
+- performatif : `INFORM`
+- le contenu du message est celui de la requête, plus les éventuels champs suivants
+- description : description récursive des propriétés et éléments d'un diagramme/élément
+
+###### Erreur :
+- performatif : `FAILURE`
+- error : message d'erreur
