@@ -17,10 +17,11 @@ import utils.JSON;
 import utils.Services;
 import utils.Messaging;
 import utils.Errors;
+import utils.DiaQuery;
 import mainCt.restAgt.RestServer;
 
 public class RestAgt extends Agent {
-    private AgentContainer diaContainer = null;
+    public AgentContainer diaContainer = null;
     
     protected void setup() {
         // retrieve diagram container
@@ -30,40 +31,9 @@ public class RestAgt extends Agent {
         RestServer.launchServer(this);
     }
     
-    // create a new diagram agent
-    public void addNewDiagram(String diaName) {
-        try {
-            Services.getDiagram(this, diaName);
-        }
-        catch(RuntimeException re) {
-            try {
-                // create DiaAgt if it does not exists yet
-                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
-                agentCc.start();
-            }
-            catch (Exception e) {
-                Errors.throwKO("Unable to create diagram '"+diaName+"'");
-            }
-        }
-    }
-    
     // create a new element and sets its propreties
     public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        
-        String diaName = path.get(0);
-        //path = path.subList(1, path.size());
-        message.addReceiver(Services.getDiagram(this, diaName));
-        
-        Map<String, String> map = new HashMap<>();
-        map.put(Messaging.TYPE, Method.PUT.toString());
-        map.put(Messaging.PATH, JSON.serializeStringList(path));
-        map.put(Messaging.PROPERTIES, propertyMapSerialized);
-        
-        message.setContent(JSON.serializeStringMap(map));
-        message.setConversationId(queryId);
-        this.send(message);
-        
+        DiaQuery.addNewElement(this, queryId, path, propertyMapSerialized);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
     

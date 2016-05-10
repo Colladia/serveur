@@ -21,6 +21,7 @@ import org.restlet.resource.ServerResource;
 import utils.JSON;
 import utils.Messaging;
 import utils.Services;
+import utils.DiaQuery;
 import mainCt.restAgt.RestAgt;
 import mainCt.restAgt.RestUtils;
 
@@ -86,7 +87,7 @@ public class RestServer extends ServerResource {
             
             if (splitPath.size() == 1) {
                 // create new diagram
-                restAgt.addNewDiagram(splitPath.get(0));
+                DiaQuery.addNewDiagram(restAgt, restAgt.diaContainer, splitPath.get(0));
                 Map<String, String> map = new HashMap<>();
                 map.put(Messaging.TYPE, Method.PUT.toString());
                 map.put(Messaging.PATH, JSON.serializeStringList(splitPath));
