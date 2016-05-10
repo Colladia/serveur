@@ -20,6 +20,7 @@ import org.restlet.resource.ServerResource;
 
 import utils.JSON;
 import utils.Messaging;
+import utils.Services;
 import mainCt.restAgt.RestAgt;
 import mainCt.restAgt.RestUtils;
 
@@ -121,7 +122,7 @@ public class RestServer extends ServerResource {
                 // return the list of available diagram
                 Map<String, String> map = new HashMap<>();
                 map.put(Messaging.TYPE, Method.GET.toString());
-                map.put(Messaging.LIST, JSON.serializeStringList(restAgt.getDiagramList()));
+                map.put(Messaging.LIST, JSON.serializeStringList(Services.getDiagramNameList(restAgt)));
                 map.put(Messaging.STATUS, Messaging.OK);
                 return JSON.serializeStringMap(map);
             }

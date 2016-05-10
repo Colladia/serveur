@@ -7,6 +7,10 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Services {
     
     // deregister agent
@@ -60,5 +64,32 @@ public class Services {
         }
         
         return AIDList;
+    }
+    
+    // return a list of the diagram names
+    public static List<AID> getDiagramList(Agent agent) {
+        AID[] AIDList = Services.getAgentsByService(agent, "Diagram", null);
+        return Arrays.asList(AIDList);
+    }
+    
+    // return a list of the diagram names
+    public static List<String> getDiagramNameList(Agent agent) {
+        List<AID> AIDList = getDiagramList(agent);
+        List<String> r = new ArrayList<>();
+        for (AID i : AIDList) {
+            r.add(i.getLocalName().substring("DiaAgt-".length()));
+        }
+        return r;
+    }
+    
+    // retrieve the AID of a diagram from its name or throw an error
+    public static AID getDiagram(Agent agent, String diaName) {
+        AID[] services = Services.getAgentsByService(agent, "Diagram", diaName);
+        
+        if (services.length <= 0) {
+            Errors.throwKO("Diagram '"+diaName+"' does not exists");
+        }
+
+        return services[0];
     }
 }

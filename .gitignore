@@ -2,5 +2,6 @@
 tmp/
 .idea/
 bin/
+data/
 APDescription.txt
 MTPs-Main-Container.txt

@@ -9,13 +9,9 @@ import org.restlet.data.Method;
 
 import jade.core.Agent;
 import jade.core.AID;
-import jade.core.Profile;
-import jade.core.ProfileImpl;
-import jade.core.Runtime;
 import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
-import jade.wrapper.ContainerController;
 
 import utils.JSON;
 import utils.Services;
@@ -27,41 +23,17 @@ public class RestAgt extends Agent {
     private AgentContainer diaContainer = null;
     
     protected void setup() {
-        // create diagram container
-        Runtime rt = Runtime.instance();
-        Profile diaProfile = null;
-        diaProfile = new ProfileImpl("127.0.0.1", -1, null, false);
-        diaProfile.setParameter(Profile.CONTAINER_NAME, "DiaCt");
-        diaContainer = rt.createAgentContainer(diaProfile);
+        // retrieve diagram container
+        Object[] args = getArguments();
+        diaContainer = (AgentContainer) args[0];
         
         RestServer.launchServer(this);
-    }
-    
-    // retrieve the AID of a diagram from its name or throw an error
-    public AID getDiagram(String diaName) {
-        AID[] services = Services.getAgentsByService(this, "Diagram", diaName);
-        
-        if (services.length <= 0) {
-            Errors.throwKO("Diagram '"+diaName+"' does not exists");
-        }
-
-        return services[0];
-    }
-    
-    // return a list of the diagram names
-    public List<String> getDiagramList() {
-        List<String> r = new ArrayList<>();
-        AID[] AIDList = Services.getAgentsByService(this, "Diagram", null);
-        for (AID i : AIDList) {
-            r.add(i.getLocalName().substring("DiaAgt-".length()));
-        }
-        return r;
     }
     
     // create a new diagram agent
     public void addNewDiagram(String diaName) {
         try {
-            getDiagram(diaName);
+            Services.getDiagram(this, diaName);
         }
         catch(RuntimeException re) {
             try {
@@ -81,7 +53,7 @@ public class RestAgt extends Agent {
         
         String diaName = path.get(0);
         //path = path.subList(1, path.size());
-        message.addReceiver(getDiagram(diaName));
+        message.addReceiver(Services.getDiagram(this, diaName));
         
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.PUT.toString());
@@ -105,7 +77,7 @@ public class RestAgt extends Agent {
             ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
             
             String diaName = path.get(0);
-            message.addReceiver(getDiagram(diaName));
+            message.addReceiver(Services.getDiagram(this, diaName));
             
             message.setContent(JSON.serializeStringMap(map));
             message.setConversationId(queryId);
@@ -132,7 +104,7 @@ public class RestAgt extends Agent {
         
         String diaName = path.get(0);
         //path = path.subList(1, path.size());
-        message.addReceiver(getDiagram(diaName));
+        message.addReceiver(Services.getDiagram(this, diaName));
         
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.DELETE.toString());
@@ -151,7 +123,7 @@ public class RestAgt extends Agent {
         
         String diaName = path.get(0);
         //path = path.subList(1, path.size());
-        message.addReceiver(getDiagram(diaName));
+        message.addReceiver(Services.getDiagram(this, diaName));
         
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.POST.toString());
@@ -171,7 +143,7 @@ public class RestAgt extends Agent {
         
         String diaName = path.get(0);
         //path = path.subList(1, path.size());
-        message.addReceiver(getDiagram(diaName));
+        message.addReceiver(Services.getDiagram(this, diaName));
         
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.GET.toString());
