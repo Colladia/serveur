@@ -60,9 +60,11 @@ public class DiaAgt extends Agent {
         if (elt.subEltMap.containsKey(toRemove)) {
             elt.subEltMap.remove(toRemove);
         }
-        else {
-            Errors.throwKO("Path '"+String.join("/", path)+"/"+toRemove+"' does not exists");
-        }
+        // do not throw error if the last element does not exists
+        
+        //else {
+            //Errors.throwKO("Path '"+String.join("/", path)+"/"+toRemove+"' does not exists");
+        //}
     }
     
     // remove some properties of an element

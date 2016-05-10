@@ -97,21 +97,33 @@ public class RestAgt extends Agent {
     
     // remove an element or a diagram
     public void rmElement(String queryId, List<String> path) {
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        
-        String diaName = path.get(0);
-        //path = path.subList(1, path.size());
-        message.addReceiver(getDiagram(diaName));
-        
         Map<String, String> map = new HashMap<>();
         map.put(Messaging.TYPE, Method.DELETE.toString());
         map.put(Messaging.PATH, JSON.serializeStringList(path));
         
-        message.setContent(JSON.serializeStringMap(map));
-        message.setConversationId(queryId);
-        this.send(message);
-        
-        addBehaviour(new ReceiveBhv(this, queryId));
+        try {
+            ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+            
+            String diaName = path.get(0);
+            message.addReceiver(getDiagram(diaName));
+            
+            message.setContent(JSON.serializeStringMap(map));
+            message.setConversationId(queryId);
+            
+            this.send(message);
+            
+            addBehaviour(new ReceiveBhv(this, queryId));
+        }
+        catch (RuntimeException re) {
+            // do not raise an error if the diagram to remove does not exists
+            if (path.size() == 1) {
+                map.put(Messaging.STATUS, Messaging.OK);
+                RestServer.returnQueue.put(queryId, JSON.serializeStringMap(map));
+            }
+            else {
+                throw re;
+            }
+        }
     }
     
     // rm a list of properties from an element
