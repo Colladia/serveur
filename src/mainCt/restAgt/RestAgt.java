@@ -61,12 +61,17 @@ public class RestAgt extends Agent {
     // create a new diagram agent
     public void addNewDiagram(String diaName) {
         try {
-            // create DiaAgt
-            AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
-            agentCc.start();
+            getDiagram(diaName);
         }
-        catch(Exception e) {
-            Errors.throwKO("Diagram '"+diaName+"' already exists");
+        catch(RuntimeException re) {
+            try {
+                // create DiaAgt if it does not exists yet
+                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
+                agentCc.start();
+            }
+            catch (Exception e) {
+                Errors.throwKO("Unable to create diagram '"+diaName+"'");
+            }
         }
     }
     

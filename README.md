@@ -1,7 +1,5 @@
 # Colladia
 
----
-
 ## Interface :
 
 #### Général :
