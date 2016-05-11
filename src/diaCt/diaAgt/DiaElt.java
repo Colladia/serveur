@@ -40,4 +40,21 @@ public class DiaElt {
         }
         return JSON.serializeStringMap(map);
     }
+    
+    // recursively restore elements
+    public void restoreElements(Map<String, String> description) {
+        for (String key : description.keySet()) {
+            String jsonStr = description.get(key);
+            if (JSON.isJSONObject(jsonStr)) {
+                // it's a sub-element --> create it and make a recursive call
+                DiaElt newElt = new DiaElt(new HashMap<>());
+                newElt.restoreElements(JSON.deserializeStringMap(jsonStr));
+                subEltMap.put(key, newElt);
+            }
+            else {
+                // it's a property
+                propertyMap.put(key, jsonStr);
+            }
+        }
+    }
 }

@@ -51,4 +51,17 @@ public class DiaQuery {
         message.setConversationId(queryId);
         agent.send(message);
     }
+    
+    // restore the elements of a diagram from a serialized map
+    public static void restoreElements(Agent agent, String diaName, String description) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(Services.getDiagram(agent, diaName));
+        
+        Map<String, String> map = new HashMap<>();
+        map.put(Messaging.TYPE, Messaging.TYPE_RESTORE);
+        map.put(Messaging.DESCRIPTION, description);
+        
+        message.setContent(JSON.serializeStringMap(map));
+        agent.send(message);
+    }
 }

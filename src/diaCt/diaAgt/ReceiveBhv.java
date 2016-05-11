@@ -29,42 +29,41 @@ public class ReceiveBhv extends CyclicBehaviour{
         ACLMessage message = parentAgt.receive(mt);
         if (message != null) {
             try {
+                ACLMessage reply = message.createReply();
+                reply.setPerformative(ACLMessage.INFORM);
+                
                 Map<String, String> map = JSON.deserializeStringMap(message.getContent());
                 map.put(Messaging.STATUS, Messaging.OK);
                 
-                List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
-                List<String> path = completePath.subList(1, completePath.size());
-                
                 // PUT : add new element
                 if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
+                    List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
+                    List<String> path = completePath.subList(1, completePath.size());
+                
                     Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
                     
                     String desc = parentAgt.addNewElement(path, propertyMap);
                     
-                    ACLMessage reply = message.createReply();
-                    reply.setPerformative(ACLMessage.INFORM);
-                    
                     map.put(Messaging.PROPERTIES, desc);
                     reply.setContent(JSON.serializeStringMap(map));
-                    
-                    parentAgt.send(reply);
                 }
                 
                 // GET : get element description
                 else if (map.get(Messaging.TYPE).equals(Method.GET.toString())) {
-                    String desc = parentAgt.getElementDescription(path);
-                    ACLMessage reply = message.createReply();
+                    List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
+                    List<String> path = completePath.subList(1, completePath.size());
                     
-                    reply.setPerformative(ACLMessage.INFORM);
+                    String desc = parentAgt.getElementDescription(path);
                     
                     map.put(Messaging.DESCRIPTION, desc);
                     reply.setContent(JSON.serializeStringMap(map));
-                    
-                    parentAgt.send(reply);
                 }
                 
                 // DELETE : remove the entire diagram, an element and its sub-elements or some properties
                 else if (map.get(Messaging.TYPE).equals(Method.DELETE.toString())) {
+                    List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
+                    List<String> path = completePath.subList(1, completePath.size());
+                    
                     if (map.containsKey(Messaging.PROPERTIES_LIST)) {
                         // remove properties
                         parentAgt.rmProperties(path, JSON.deserializeStringList(map.get(Messaging.PROPERTIES_LIST)));
@@ -81,27 +80,31 @@ public class ReceiveBhv extends CyclicBehaviour{
                         }
                     }
                     
-                    ACLMessage reply = message.createReply();
-                    
-                    reply.setPerformative(ACLMessage.INFORM);
                     reply.setContent(JSON.serializeStringMap(map));
-                    
-                    parentAgt.send(reply);
                 }
                 
                 // POST : modify properties of an element
                 else if (map.get(Messaging.TYPE).equals(Method.POST.toString())) {
+                    List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
+                    List<String> path = completePath.subList(1, completePath.size());
+                    
                     parentAgt.chProperties(path, JSON.deserializeStringMap(map.get(Messaging.PROPERTIES)));
                     
-                    ACLMessage reply = message.createReply();
-                    
-                    reply.setPerformative(ACLMessage.INFORM);
-                    
-                    //map.put(Messaging.PROPERTIES, desc);
                     reply.setContent(JSON.serializeStringMap(map));
-                    
-                    parentAgt.send(reply);
                 }
+                
+                // TYPE_RESTORE : restore the states of the elements from a description
+                else if (map.get(Messaging.TYPE).equals(Messaging.TYPE_RESTORE)) {
+                    // restore
+                    Map<String, String> description = JSON.deserializeStringMap(map.get(Messaging.DESCRIPTION));
+                    parentAgt.rootElt.restoreElements(description);
+                    
+                    // get and return new complete description
+                    map.put(Messaging.DESCRIPTION, parentAgt.getElementDescription(new ArrayList<>()));
+                    reply.setContent(JSON.serializeStringMap(map));
+                }
+                
+                parentAgt.send(reply);
                 
             }
             catch (RuntimeException re) {

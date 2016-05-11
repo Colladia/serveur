@@ -28,10 +28,6 @@ public class TickerBhv extends TickerBehaviour{
     @Override
     public void onTick() {
         // periodicaly send message to get the complete description of each diagram
-        
-        // DEBUG
-        System.out.println("Tick !");
-        
         List<AID> DiagramList = Services.getDiagramList(parentAgt);
         
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);

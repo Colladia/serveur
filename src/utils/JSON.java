@@ -86,4 +86,8 @@ public class JSON {
         }
         return array;
     }
+    
+    public static boolean isJSONObject(String str) {
+        return str.startsWith("{");
+    }
 }
