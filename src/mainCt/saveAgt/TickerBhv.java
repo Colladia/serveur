@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 
 import utils.JSON;
 import utils.Services;
@@ -30,13 +31,34 @@ public class TickerBhv extends TickerBehaviour{
         // periodicaly send message to get the complete description of each diagram
         
         // DEBUG
-        System.out.println("save tick");
+        System.out.println("Save tick !");
         
-        List<AID> DiagramList = Services.getDiagramList(parentAgt);
+        List<AID> diagramList = Services.getDiagramList(parentAgt);
+        List<String> diagramNameList = new ArrayList<>();
+        for (AID i : diagramList) {
+            diagramNameList.add(i.getLocalName().substring("DiaAgt-".length()));
+        }
         
+        // remove file of related to non-existing diagram
+        File saveDir = new File(parentAgt.SAVE_DIR);
+        File[] fileList = saveDir.listFiles();
+        for (File f : fileList) {
+            // retrieve diagram name (remove extension)
+            String diaName = f.getName();
+            int pos = diaName.lastIndexOf(".");
+            if (pos > 0) {
+                diaName = diaName.substring(0, pos);
+            }
+            
+            if (diagramNameList.indexOf(diaName) == -1) {
+                f.delete();
+            }
+        }
+        
+        // send message to get description of every diagram
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         
-        for (AID i : DiagramList) {
+        for (AID i : diagramList) {
             message.addReceiver(i);
         }
         
