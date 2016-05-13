@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 
 import utils.JSON;
 import utils.Services;
-import utils.DiaQuery;
+import utils.Messaging;
 
 public class RestoreBhv extends OneShotBehaviour{
     private SaveAgt parentAgt;
@@ -44,13 +44,13 @@ public class RestoreBhv extends OneShotBehaviour{
                     }
                     
                     // create the diagram
-                    DiaQuery.addNewDiagram(parentAgt, parentAgt.diaContainer, diaName);
+                    Services.addNewDiagram(parentAgt, parentAgt.diaContainer, diaName);
                     
                     // restore its elements
                     boolean done = false;
                     while (! done) {
                         try {
-                            DiaQuery.restoreElements(parentAgt, diaName, lines.get(0));
+                            parentAgt.send(Messaging.restoreElements(parentAgt, null, diaName, lines.get(0)));
                             done = true;
                         }
                         catch (RuntimeException re) {}

@@ -6,10 +6,14 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import utils.Errors;
 
 public class Services {
     public static String HISTORY = "history";
@@ -67,6 +71,31 @@ public class Services {
         }
         
         return AIDList;
+    }
+    
+    
+    
+    // create a new diagram agent
+    public static void addNewDiagram(Agent agent, AgentContainer diaContainer, String diaName) {
+        try {
+            getDiagram(agent, diaName);
+        }
+        catch(RuntimeException re) {
+            try {
+                // create DiaAgt if it does not exists yet
+                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
+                agentCc.start();
+                
+                agentCc = diaContainer.createNewAgent("ClockAgt-"+diaName, "diaCt.clockAgt.ClockAgt", null);
+                agentCc.start();
+                
+                agentCc = diaContainer.createNewAgent("HistAgt-"+diaName, "diaCt.histAgt.HistAgt", null);
+                agentCc.start();
+            }
+            catch (Exception e) {
+                Errors.throwKO("Unable to create diagram '"+diaName+"'");
+            }
+        }
     }
     
     // return a list of the diagram names

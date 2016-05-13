@@ -17,7 +17,6 @@ import utils.JSON;
 import utils.Services;
 import utils.Messaging;
 import utils.Errors;
-import utils.DiaQuery;
 import mainCt.restAgt.RestServer;
 
 public class RestAgt extends Agent {
@@ -33,33 +32,27 @@ public class RestAgt extends Agent {
     
     // create a new element and sets its propreties
     public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
-        DiaQuery.addNewElement(this, queryId, path, propertyMapSerialized);
+        ACLMessage msg = Messaging.addNewElement(this, null, path, propertyMapSerialized);
+        msg.setConversationId(queryId);
+        this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
     
     // remove an element or a diagram
     public void rmElement(String queryId, List<String> path) {
-        Map<String, String> map = new HashMap<>();
-        map.put(Messaging.TYPE, Method.DELETE.toString());
-        map.put(Messaging.PATH, JSON.serializeStringList(path));
-        
         try {
-            ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-            
-            String diaName = path.get(0);
-            message.addReceiver(Services.getDiagram(this, diaName));
-            
-            message.setContent(JSON.serializeStringMap(map));
-            message.setConversationId(queryId);
-            
-            this.send(message);
-            
+            ACLMessage msg = Messaging.rmElement(this, null, path);
+            msg.setConversationId(queryId);
+            this.send(msg);
             addBehaviour(new ReceiveBhv(this, queryId));
         }
         catch (RuntimeException re) {
             // do not raise an error if the diagram to remove does not exists
             if (path.size() == 1) {
+                Map<String, String> map = new HashMap<>();
                 map.put(Messaging.STATUS, Messaging.OK);
+                map.put(Messaging.TYPE, Method.DELETE.toString());
+                map.put(Messaging.PATH, JSON.serializeStringList(path));
                 RestServer.returnQueue.put(queryId, JSON.serializeStringMap(map));
             }
             else {
@@ -70,60 +63,25 @@ public class RestAgt extends Agent {
     
     // rm a list of properties from an element
     public void rmProperties(String queryId, List<String> path, List<String> propertiesList) {
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        
-        String diaName = path.get(0);
-        //path = path.subList(1, path.size());
-        message.addReceiver(Services.getDiagram(this, diaName));
-        
-        Map<String, String> map = new HashMap<>();
-        map.put(Messaging.TYPE, Method.DELETE.toString());
-        map.put(Messaging.PATH, JSON.serializeStringList(path));
-        map.put(Messaging.PROPERTIES_LIST, JSON.serializeStringList(propertiesList));
-        
-        message.setContent(JSON.serializeStringMap(map));
-        message.setConversationId(queryId);
-        this.send(message);
-        
+        ACLMessage msg = Messaging.rmProperties(this, null, path, propertiesList);
+        msg.setConversationId(queryId);
+        this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
     
+    // change/add properties of an element
     public void chProperties(String queryId, List<String> path, Map<String, String> propertyMap) {
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        
-        String diaName = path.get(0);
-        //path = path.subList(1, path.size());
-        message.addReceiver(Services.getDiagram(this, diaName));
-        
-        Map<String, String> map = new HashMap<>();
-        map.put(Messaging.TYPE, Method.POST.toString());
-        map.put(Messaging.PATH, JSON.serializeStringList(path));
-        map.put(Messaging.PROPERTIES, JSON.serializeStringMap(propertyMap));
-        
-        message.setContent(JSON.serializeStringMap(map));
-        message.setConversationId(queryId);
-        this.send(message);
-        
+        ACLMessage msg = Messaging.chProperties(this, null, path, propertyMap);
+        msg.setConversationId(queryId);
+        this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
     
     // retrieve the complete element description
     public void getElementDescription(String queryId, List<String> path) {
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        
-        String diaName = path.get(0);
-        //path = path.subList(1, path.size());
-        message.addReceiver(Services.getDiagram(this, diaName));
-        
-        Map<String, String> map = new HashMap<>();
-        map.put(Messaging.TYPE, Method.GET.toString());
-        map.put(Messaging.PATH, JSON.serializeStringList(path));
-        //map.put(Messaging.PROPERTIES, propertyMapSerialized);
-        
-        message.setContent(JSON.serializeStringMap(map));
-        message.setConversationId(queryId);
-        this.send(message);
-        
+        ACLMessage msg = Messaging.getElementDescription(this, null, path);
+        msg.setConversationId(queryId);
+        this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
 }

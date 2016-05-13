@@ -106,7 +106,6 @@ public class ReceiveBhv extends CyclicBehaviour{
                 }
                 
                 parentAgt.send(reply);
-                
             }
             catch (RuntimeException re) {
                 ACLMessage reply = message.createReply();

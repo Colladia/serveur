@@ -34,7 +34,7 @@ public class DiaElt {
     
     // retrieve the complete description of an element recursively
     public String getDescription() {
-        Map<String, String> map = propertyMap;
+        Map<String, String> map = new HashMap<>(propertyMap);
         for (String str : subEltMap.keySet()) {
             map.put(str, subEltMap.get(str).getDescription());
         }

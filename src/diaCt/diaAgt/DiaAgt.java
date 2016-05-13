@@ -62,7 +62,6 @@ public class DiaAgt extends Agent {
             elt.subEltMap.remove(toRemove);
         }
         // do not throw error if the last element does not exists
-        
         //else {
             //Errors.throwKO("Path '"+String.join("/", path)+"/"+toRemove+"' does not exists");
         //}
@@ -73,7 +72,8 @@ public class DiaAgt extends Agent {
         DiaElt elt = rootElt.retrieveElt(path);
         
         for (String i : propertiesList) {
-            elt.propertyMap.remove(i); // do not throw an error if property does not exists
+            elt.propertyMap.remove(i);
+            // do not throw an error if property does not exists
             //if (elt.propertyMap.containsKey(i)) {
                 //elt.propertyMap.remove(i);
             //}
