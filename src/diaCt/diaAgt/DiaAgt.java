@@ -12,6 +12,7 @@ import jade.lang.acl.ACLMessage;
 import utils.Services;
 import utils.JSON;
 import utils.Errors;
+import utils.Services;
 
 public class DiaAgt extends Agent {
     public DiaElt rootElt = new DiaElt(new HashMap<String, String>());
@@ -19,7 +20,7 @@ public class DiaAgt extends Agent {
     
     protected void setup() {
         diaName = getLocalName().substring("DiaAgt-".length());
-        Services.registerService(this, "Diagram", diaName);
+        Services.registerService(this, Services.DIAGRAM, diaName);
         
         addBehaviour(new ReceiveBhv(this));
     }

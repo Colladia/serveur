@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Services {
+    public static String HISTORY = "history";
+    public static String DIAGRAM = "diagram";
+    public static String CLOCK = "clock";
     
     // deregister agent
     public static void deregisterService(Agent agent) {
@@ -84,10 +87,32 @@ public class Services {
     
     // retrieve the AID of a diagram from its name or throw an error
     public static AID getDiagram(Agent agent, String diaName) {
-        AID[] services = Services.getAgentsByService(agent, "Diagram", diaName);
+        AID[] services = Services.getAgentsByService(agent, DIAGRAM, diaName);
         
         if (services.length <= 0) {
             Errors.throwKO("Diagram '"+diaName+"' does not exists");
+        }
+
+        return services[0];
+    }
+    
+    // retrieve the AID of a diagram clock from the name of the diagram or throw an error
+    public static AID getClock(Agent agent, String diaName) {
+        AID[] services = Services.getAgentsByService(agent, CLOCK, diaName);
+        
+        if (services.length <= 0) {
+            Errors.throwKO("Clock of diagram '"+diaName+"' does not exists");
+        }
+
+        return services[0];
+    }
+    
+    // retrieve the AID of a diagram history from the name of the diagram or throw an error
+    public static AID getHist(Agent agent, String diaName) {
+        AID[] services = Services.getAgentsByService(agent, HISTORY, diaName);
+        
+        if (services.length <= 0) {
+            Errors.throwKO("History of diagram '"+diaName+"' does not exists");
         }
 
         return services[0];

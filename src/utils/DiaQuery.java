@@ -28,6 +28,12 @@ public class DiaQuery {
                 // create DiaAgt if it does not exists yet
                 AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
                 agentCc.start();
+                
+                agentCc = diaContainer.createNewAgent("ClockAgt-"+diaName, "diaCt.clockAgt.ClockAgt", null);
+                agentCc.start();
+                
+                agentCc = diaContainer.createNewAgent("HistAgt-"+diaName, "diaCt.histAgt.HistAgt", null);
+                agentCc.start();
             }
             catch (Exception e) {
                 Errors.throwKO("Unable to create diagram '"+diaName+"'");
