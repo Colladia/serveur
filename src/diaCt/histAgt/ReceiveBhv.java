@@ -93,11 +93,6 @@ public class ReceiveBhv extends CyclicBehaviour{
                 reply.setContent(JSON.serializeStringMap(map));
             }
             
-            Iterator<AID> it = reply.getAllReceiver();
-            while (it.hasNext()) {
-                System.out.println(it.next());
-            }
-            
             parentAgt.send(reply);
             
             if (toDelete) {
