@@ -8,7 +8,7 @@ import utils.Services;
 
 public class ClockAgt extends Agent {
     public String diaName = null;
-    public static int clock = 0;
+    public int clock = 0;
     
     protected void setup() {
         diaName = getLocalName().substring("ClockAgt-".length());

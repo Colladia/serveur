@@ -25,6 +25,8 @@ public class Messaging {
     public static String LIST = "diagram-list"; // field for diagram list
     public static String PROPERTIES_LIST = "properties-list"; // field for a list of properties name
     public static String CLOCK = "clock"; // field for returned clock
+    public static String LAST_CLOCK = "last-clock"; // field for client last received clock
+    public static String MODIFICATION_LIST = "modification-list"; // json array of modifications
     
     /* REQUEST TYPE */
     // org.restlet.data.Method for PUT, POST, GET and DELETE
@@ -122,7 +124,7 @@ public class Messaging {
         return message;
     }
     
-    // return a message to change/add properties of an element
+    // return a message to get the recursive description of a diagram/element
     public static ACLMessage getElementDescription(Agent agent, Map<String, String> contentMap, List<String> path) {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         

@@ -52,8 +52,7 @@ public class ReceiveBhv extends CyclicBehaviour{
             reply.setContent(JSON.serializeStringMap(map));
             
             reply.clearAllReceiver();
-            //reply.addReceiver(Services.getHist(parentAgt, parentAgt.diaName));
-            reply.addReceiver(Services.getAgentsByService(parentAgt, Services.REST, Services.REST)[0]);
+            reply.addReceiver(Services.getHist(parentAgt, parentAgt.diaName));
             
             parentAgt.send(reply);
             
