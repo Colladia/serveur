@@ -16,7 +16,7 @@ public class HistAgt extends Agent {
     
     protected void setup() {
         diaName = getLocalName().substring("HistAgt-".length());
-        Services.registerService(this, Services.CLOCK, diaName);
+        Services.registerService(this, Services.HISTORY, diaName);
     }
     
     protected void takeDown() {

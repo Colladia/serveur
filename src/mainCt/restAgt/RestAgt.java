@@ -23,6 +23,9 @@ public class RestAgt extends Agent {
     public AgentContainer diaContainer = null;
     
     protected void setup() {
+        // register
+        Services.registerService(this, Services.REST, Services.REST);
+        
         // retrieve diagram container
         Object[] args = getArguments();
         diaContainer = (AgentContainer) args[0];
@@ -34,6 +37,10 @@ public class RestAgt extends Agent {
     public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
         ACLMessage msg = Messaging.addNewElement(this, null, path, propertyMapSerialized);
         msg.setConversationId(queryId);
+        
+        String diaName = path.get(0);
+        msg.addReplyTo(Services.getClock(this, diaName));
+        
         this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
@@ -43,6 +50,10 @@ public class RestAgt extends Agent {
         try {
             ACLMessage msg = Messaging.rmElement(this, null, path);
             msg.setConversationId(queryId);
+            
+            String diaName = path.get(0);
+            msg.addReplyTo(Services.getClock(this, diaName));
+            
             this.send(msg);
             addBehaviour(new ReceiveBhv(this, queryId));
         }
@@ -65,6 +76,10 @@ public class RestAgt extends Agent {
     public void rmProperties(String queryId, List<String> path, List<String> propertiesList) {
         ACLMessage msg = Messaging.rmProperties(this, null, path, propertiesList);
         msg.setConversationId(queryId);
+        
+        String diaName = path.get(0);
+        msg.addReplyTo(Services.getClock(this, diaName));
+        
         this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
@@ -73,6 +88,10 @@ public class RestAgt extends Agent {
     public void chProperties(String queryId, List<String> path, Map<String, String> propertyMap) {
         ACLMessage msg = Messaging.chProperties(this, null, path, propertyMap);
         msg.setConversationId(queryId);
+        
+        String diaName = path.get(0);
+        msg.addReplyTo(Services.getClock(this, diaName));
+        
         this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
@@ -81,6 +100,10 @@ public class RestAgt extends Agent {
     public void getElementDescription(String queryId, List<String> path) {
         ACLMessage msg = Messaging.getElementDescription(this, null, path);
         msg.setConversationId(queryId);
+        
+        String diaName = path.get(0);
+        msg.addReplyTo(Services.getClock(this, diaName));
+        
         this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }

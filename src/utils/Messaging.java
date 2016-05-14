@@ -24,6 +24,7 @@ public class Messaging {
     public static String ERROR = "error"; // field for error message
     public static String LIST = "diagram-list"; // field for diagram list
     public static String PROPERTIES_LIST = "properties-list"; // field for a list of properties name
+    public static String CLOCK = "clock"; // field for returned clock
     
     /* REQUEST TYPE */
     // org.restlet.data.Method for PUT, POST, GET and DELETE

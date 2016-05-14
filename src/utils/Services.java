@@ -19,6 +19,7 @@ public class Services {
     public static String HISTORY = "history";
     public static String DIAGRAM = "diagram";
     public static String CLOCK = "clock";
+    public static String REST = "REST";
     
     // deregister agent
     public static void deregisterService(Agent agent) {

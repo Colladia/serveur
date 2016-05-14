@@ -30,6 +30,7 @@ public class ReceiveBhv extends CyclicBehaviour{
         ACLMessage message = parentAgt.receive(mt);
         if (message != null) {
             try {
+                boolean toDelete = false;
                 ACLMessage reply = message.createReply();
                 reply.setPerformative(ACLMessage.INFORM);
                 
@@ -72,8 +73,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     else {
                         // remove diagram/element
                         if (completePath.size() == 1) {
-                            // stop the current diagram
-                            parentAgt.doDelete();
+                            toDelete = true;
                         }
                         else {
                             // remove element
@@ -106,11 +106,21 @@ public class ReceiveBhv extends CyclicBehaviour{
                 }
                 
                 parentAgt.send(reply);
+                
+                // delete current agent
+                if (toDelete) {
+                    parentAgt.doDelete();
+                }
             }
             catch (RuntimeException re) {
                 ACLMessage reply = message.createReply();
                 reply.setPerformative(ACLMessage.FAILURE);
                 reply.setContent(re.getMessage());
+                
+                // send error message to initial sender (do not follow reply-to)
+                reply.clearAllReceiver();
+                reply.addReceiver(message.getSender());
+                
                 parentAgt.send(reply);
             }
         }

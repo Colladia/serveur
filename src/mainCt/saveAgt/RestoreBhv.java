@@ -30,34 +30,41 @@ public class RestoreBhv extends OneShotBehaviour{
     public void action() {
         // retrieve the list of files in the save directory
         File saveDir = new File(parentAgt.SAVE_DIR);
-        File[] fileList = saveDir.listFiles();
-        for (File f : fileList) {
-            if (f.isFile()) {
-                try {
-                    List<String> lines = Files.readAllLines(f.toPath(), StandardCharsets.UTF_8);
-                    
-                    // retrieve diagram name (remove extension)
-                    String diaName = f.getName();
-                    int pos = diaName.lastIndexOf(".");
-                    if (pos > 0) {
-                        diaName = diaName.substring(0, pos);
-                    }
-                    
-                    // create the diagram
-                    Services.addNewDiagram(parentAgt, parentAgt.diaContainer, diaName);
-                    
-                    // restore its elements
-                    boolean done = false;
-                    while (! done) {
-                        try {
-                            parentAgt.send(Messaging.restoreElements(parentAgt, null, diaName, lines.get(0)));
-                            done = true;
+        
+        if (! saveDir.exists()) {
+            // create directory if it does not exists
+            saveDir.mkdir();
+        }
+        else {
+            File[] fileList = saveDir.listFiles();
+            for (File f : fileList) {
+                if (f.isFile()) {
+                    try {
+                        List<String> lines = Files.readAllLines(f.toPath(), StandardCharsets.UTF_8);
+                        
+                        // retrieve diagram name (remove extension)
+                        String diaName = f.getName();
+                        int pos = diaName.lastIndexOf(".");
+                        if (pos > 0) {
+                            diaName = diaName.substring(0, pos);
                         }
-                        catch (RuntimeException re) {}
+                        
+                        // create the diagram
+                        Services.addNewDiagram(parentAgt, parentAgt.diaContainer, diaName);
+                        
+                        // restore its elements
+                        boolean done = false;
+                        while (! done) {
+                            try {
+                                parentAgt.send(Messaging.restoreElements(parentAgt, null, diaName, lines.get(0)));
+                                done = true;
+                            }
+                            catch (RuntimeException re) {}
+                        }
                     }
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

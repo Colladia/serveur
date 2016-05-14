@@ -8,10 +8,13 @@ import utils.Services;
 
 public class ClockAgt extends Agent {
     public String diaName = null;
+    public static int clock = 0;
     
     protected void setup() {
         diaName = getLocalName().substring("ClockAgt-".length());
-        Services.registerService(this, Services.HISTORY, diaName);
+        Services.registerService(this, Services.CLOCK, diaName);
+        
+        addBehaviour(new ReceiveBhv(this));
     }
     
     protected void takeDown() {
