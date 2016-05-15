@@ -69,7 +69,11 @@ public class ReceiveBhv extends CyclicBehaviour{
                     reply.clearAllReceiver();
                     reply.addReceiver(Services.getAgentsByService(parentAgt, Services.REST, Services.REST)[0]);
                     
-                    reply.setContent(JSON.serializeStringMap(map));
+                    //reply.setContent(JSON.serializeStringMap(map));
+                    
+                    Map<String, String> t = new HashMap<>();
+                    t.put(Messaging.ERROR, "Received last clock "+last_clock);
+                    reply.setContent(JSON.serializeStringMap(t));
                 }
                 else {
                     Map<String, String> contentMap = new HashMap<>();

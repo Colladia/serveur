@@ -98,7 +98,9 @@ public class RestServer extends ServerResource {
                 String queryId = UUID.randomUUID().toString();
                 
                 String propertyMapSerialized = RestUtils.getPropertyMap(queryMap);
-                restAgt.addNewElement(queryId, splitPath, propertyMapSerialized);
+                queryMap.remove(Messaging.PROPERTIES);
+                
+                restAgt.addNewElement(queryId, splitPath, propertyMapSerialized, queryMap);
                 
                 return waitReply(queryId);
             }
@@ -114,10 +116,8 @@ public class RestServer extends ServerResource {
         Reference ref = getReference();
         
         List<String> splitPath = null;
-        //Map<String, String> queryMap = null; // to use when timestamp
         try {
             splitPath = RestUtils.getSplitPath(ref);
-            // queryMap = RestUtils.getQueryMap(ref);
             if (splitPath.size()==1 && splitPath.get(0).equals("")) {
                 // return the list of available diagram
                 Map<String, String> map = new HashMap<>();
@@ -128,9 +128,12 @@ public class RestServer extends ServerResource {
             }
             else {
                 // get diagram/element description
+                Map<String, String> queryMap = null;
+                queryMap = RestUtils.getQueryMap(ref);
+                
                 String queryId = UUID.randomUUID().toString();
                 
-                restAgt.getElementDescription(queryId, splitPath);
+                restAgt.getElementDescription(queryId, splitPath, queryMap);
                 
                 return waitReply(queryId);
             }
@@ -155,13 +158,14 @@ public class RestServer extends ServerResource {
             List<String> propertiesList = null;
             if (queryMap.containsKey(Messaging.PROPERTIES_LIST)) {
                 propertiesList = JSON.deserializeStringList(queryMap.get(Messaging.PROPERTIES_LIST));
+                queryMap.remove(Messaging.PROPERTIES_LIST);
             }
             
             if (propertiesList!=null) {
-                restAgt.rmProperties(queryId, splitPath, propertiesList);
+                restAgt.rmProperties(queryId, splitPath, propertiesList, queryMap);
             }
             else {
-                restAgt.rmElement(queryId, splitPath);
+                restAgt.rmElement(queryId, splitPath, queryMap);
             }
             
             return waitReply(queryId);
@@ -184,7 +188,8 @@ public class RestServer extends ServerResource {
             String queryId = UUID.randomUUID().toString();
             
             Map<String, String> propertyMap = JSON.deserializeStringMap(queryMap.get(Messaging.PROPERTIES));
-            restAgt.chProperties(queryId, splitPath, propertyMap);
+            queryMap.remove(Messaging.PROPERTIES);
+            restAgt.chProperties(queryId, splitPath, propertyMap, queryMap);
             
             return waitReply(queryId);
         }

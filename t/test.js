@@ -16,10 +16,17 @@ function onClickGetNoPathButton () {
 
 function onClickGetButton () {
     var path = document.getElementsByName("GetPath")[0].value;
+    var clock = document.getElementsByName("GetClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
     
     $.ajax({
         url: server+path,
-        method: "GET"
+        method: "GET",
+        dataType: "text",
+        contentType: "application/json",
+        data: {"last-clock": clock}
     })
     .done(function(data) {
         console.log("OK");
@@ -33,13 +40,17 @@ function onClickGetButton () {
 function onClickPutPropButton () {
     var path = document.getElementsByName("PutPath")[0].value;
     var properties = document.getElementsByName("PutProperties")[0].value;
+    var clock = document.getElementsByName("PutClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
     
     $.ajax({
         url: server+path,
         method: "PUT",
         dataType: "text",
         contentType: "application/json",
-        data: {"properties": properties}
+        data: {"properties": properties, "last-clock": clock}
     })
     .done(function(data) {
         console.log("OK");
@@ -53,11 +64,17 @@ function onClickPutPropButton () {
 function onClickPutButton () {
     var path = document.getElementsByName("PutPath")[0].value;
     var properties = document.getElementsByName("PutProperties")[0].value;
+    var clock = document.getElementsByName("PutClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
     
     $.ajax({
         url: server+path,
         method: "PUT",
-        dataType: "text"
+        dataType: "text",
+        contentType: "application/json",
+        data: {"last-clock": clock}
     })
     .done(function(data) {
         console.log("OK");
@@ -70,10 +87,17 @@ function onClickPutButton () {
 
 function onClickDelButton () {
     var path = document.getElementsByName("DelPath")[0].value;
+    var clock = document.getElementsByName("DelClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
     
     $.ajax({
         url: server+path,
-        method: "DELETE"
+        method: "DELETE",
+        dataType: "text",
+        contentType: "application/json",
+        data: {"last-clock": clock}
     })
     .done(function(data) {
         console.log("OK");
@@ -87,12 +111,17 @@ function onClickDelButton () {
 function onClickDelPropButton () {
     var path = document.getElementsByName("DelPath")[0].value;
     var properties = document.getElementsByName("DelProperties")[0].value;
+    var clock = document.getElementsByName("DelClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
     
     $.ajax({
         url: server+path,
         method: "DELETE",
+        dataType: "text",
         contentType: "application/json",
-        data: {"properties-list": properties}
+        data: {"properties-list": properties, "last-clock": clock}
     })
     .done(function(data) {
         console.log("OK");
@@ -106,12 +135,17 @@ function onClickDelPropButton () {
 function onClickPostButton () {
     var path = document.getElementsByName("PostPath")[0].value;
     var properties = document.getElementsByName("PostProperties")[0].value;
+    var clock = document.getElementsByName("PostClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
     
     $.ajax({
         url: server+path,
         method: "POST",
+        dataType: "text",
         contentType: "application/json",
-        data: {"properties": properties}
+        data: {"properties": properties, "last-clock": clock}
     })
     .done(function(data) {
         console.log("OK");

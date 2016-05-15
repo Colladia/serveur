@@ -34,8 +34,8 @@ public class RestAgt extends Agent {
     }
     
     // create a new element and sets its propreties
-    public void addNewElement(String queryId, List<String> path, String propertyMapSerialized) {
-        ACLMessage msg = Messaging.addNewElement(this, null, path, propertyMapSerialized);
+    public void addNewElement(String queryId, List<String> path, String propertyMapSerialized, Map<String, String> queryMap) {
+        ACLMessage msg = Messaging.addNewElement(this, queryMap, path, propertyMapSerialized);
         msg.setConversationId(queryId);
         
         String diaName = path.get(0);
@@ -46,9 +46,9 @@ public class RestAgt extends Agent {
     }
     
     // remove an element or a diagram
-    public void rmElement(String queryId, List<String> path) {
+    public void rmElement(String queryId, List<String> path, Map<String, String> queryMap) {
         try {
-            ACLMessage msg = Messaging.rmElement(this, null, path);
+            ACLMessage msg = Messaging.rmElement(this, queryMap, path);
             msg.setConversationId(queryId);
             
             String diaName = path.get(0);
@@ -73,8 +73,8 @@ public class RestAgt extends Agent {
     }
     
     // rm a list of properties from an element
-    public void rmProperties(String queryId, List<String> path, List<String> propertiesList) {
-        ACLMessage msg = Messaging.rmProperties(this, null, path, propertiesList);
+    public void rmProperties(String queryId, List<String> path, List<String> propertiesList, Map<String, String> queryMap) {
+        ACLMessage msg = Messaging.rmProperties(this, queryMap, path, propertiesList);
         msg.setConversationId(queryId);
         
         String diaName = path.get(0);
@@ -85,8 +85,8 @@ public class RestAgt extends Agent {
     }
     
     // change/add properties of an element
-    public void chProperties(String queryId, List<String> path, Map<String, String> propertyMap) {
-        ACLMessage msg = Messaging.chProperties(this, null, path, propertyMap);
+    public void chProperties(String queryId, List<String> path, Map<String, String> propertyMap, Map<String, String> queryMap) {
+        ACLMessage msg = Messaging.chProperties(this, queryMap, path, propertyMap);
         msg.setConversationId(queryId);
         
         String diaName = path.get(0);
@@ -97,8 +97,8 @@ public class RestAgt extends Agent {
     }
     
     // retrieve the complete element description
-    public void getElementDescription(String queryId, List<String> path) {
-        ACLMessage msg = Messaging.getElementDescription(this, null, path);
+    public void getElementDescription(String queryId, List<String> path, Map<String, String> queryMap) {
+        ACLMessage msg = Messaging.getElementDescription(this, queryMap, path);
         msg.setConversationId(queryId);
         
         String diaName = path.get(0);

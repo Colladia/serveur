@@ -47,6 +47,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     String desc = parentAgt.addNewElement(path, propertyMap);
                     
                     map.put(Messaging.PROPERTIES, desc);
+                    
                     reply.setContent(JSON.serializeStringMap(map));
                 }
                 
