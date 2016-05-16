@@ -56,8 +56,8 @@
 
 ## Description :
 #### Structure générale :
-- MainCt : conteneur principale
-    - agents standard JADE
+- MainCt : conteneur principal
+    - agents standards JADE
     - 1 couple RestAgt + RestServer
     - 1 SaveAgt
 - DiaCt : conteneur pour les agents des diagrammes
