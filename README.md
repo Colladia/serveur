@@ -5,18 +5,20 @@
 #### Général :
 - entrées/sorties communes à tous les requêtes/modifications
 - output :
-    - status : état de la requête (`KO` ou `OK`)
-    - error : message d'erreur si `status=KO`
-    - type : type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
-    - clock : horloge logique de la dernière modification du diagramme
+    - `status` : état de la requête (`KO` ou `OK`)
+    - `error` : message d'erreur si `status=KO`
+    - `type` : type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
+    - `clock` : horloge logique de la dernière modification du diagramme
 - input :
-    - last-clock : dernière horloge logique reçue par le client ayant envoyé la requête (optionel)
+    - `last-clock` : dernière horloge logique reçue par le client ayant envoyé la requête (optionel)
 
 #### Remarques :
 - les sorties présentées ci-dessous sont celles des modifications apportées au diagramme et pas le retour de la requête REST
-- le retour de la requête REST contient un champ status, un champ clock et :
-    - soit un champ description contenant la description complète du diagramme et de ses éléments si last-clock n'a pas été spécifié dans la requête ou si l'historique ne peut pas retourner la liste de modification désirée
-    - soit un champ modification-list contenant un tableau JSON de modifications (telles que décrites ci-après)
+- le retour de la requête REST contient un champ `status`, un champ `clock` et :
+    - soit un champ `description` contenant la description complète du diagramme et de ses éléments si `last-clock` n'a pas été spécifié dans la requête ou si l'historique ne peut pas retourner la liste de modification désirée
+    - soit un champ `modification-list` contenant un tableau JSON de modifications (telles que décrites ci-après)
+- Chaque requête `PUT`, `POST` ou `DELETE` incrémente l'horloge logique du diagramme ciblé de 1
+- Les requêtes `GET` n'induisent aucune modification de la valeur de l'horloge
 
 #### PUT :
 - création d'un diagramme :
