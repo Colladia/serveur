@@ -38,7 +38,7 @@
     - output : `{path:<path as json array>, description:<properties and sub elements as json map>}`
     
 #### DELETE :
-- suppression recursive d'un diagramme ou d'un élément :
+- suppression récursive d'un diagramme ou d'un élément :
     - uri : `<adrr>/<diagram>[/<element> ...]`
     - output : `{path:<path as json array>}`
 - suppression de propriétés :
@@ -55,7 +55,17 @@
 ---
 
 ## Description :
-#### RestAgt + RestServer [MainCt] :
+#### Structure générale :
+- MainCt : conteneur principale
+    - agents standard JADE
+    - 1 couple RestAgt + RestServer
+    - 1 SaveAgt
+- DiaCt : conteneur pour les agents des diagrammes
+    - 1 DiaAgt par diagramme
+    - 1 ClockAgt par diagramme
+    - 1 HistAgt par diagramme
+
+#### RestAgt + RestServer :
 - chargé de récupérer et de traiter les requêtes REST
     - les requêtes sont ensuite transférées sous forme d'ACLMessage au DiaAgt correspondant si besoin
 - création des nouveaux diagrammes (DiaAgt + ClockAgt + HistAgt)
@@ -67,12 +77,12 @@
     - attente d'une requête client puis :
         - création d'un diagramme ou liste des diagrammes disponibles
         - ou envoie d'un message vers le DiaAgt correspondant pour exécution de la requête
-            - le message est envoyé avec un champ reply-to indiquant le ClockAgt du diagramme
+            - le message est envoyé avec un champ `reply-to` indiquant le ClockAgt du diagramme
 - ReceiveBhv :
     - après envoi d'une requête à un DiaAgt, attente de la réponse
     - après réception de la réponse et traitement, le résultat est envoyé au client REST
 
-#### DiaAgt [DiaCt] :
+#### DiaAgt :
 - stocke l'état courant d'un diagramme
 - pour l'instant, les différents éléments, sous-éléments, etc. sont stockés dans une structure récursive
 - implémente les fonctions de recherche, ajout, suppression, modification etc. d'éléments
@@ -85,7 +95,7 @@
 - différent de DiaAgt ?
 - TODO
 
-#### SaveAgt [MainCt] :
+#### SaveAgt :
 - agent responsable de la sauvegarde et de la restauration des diagrammes du serveur après redémarrage
 - chaque diagramme est sauvegardé dans un fichier au format JSON
 
@@ -100,7 +110,7 @@
     - comportement cyclique chargé de récupérer les réponses des DiaAgt aux messages envoyé par le TickerBhv
     - à la réception de la description d'un diagramme, écrit cette dernière dans un fichier .json
 
-#### ClockAgt [DiaCt] :
+#### ClockAgt :
 - agent chargé de gérer l'horloge logique d'un diagramme
 
 ###### Comportements :
@@ -110,7 +120,7 @@
         - ajoute un champ `clock` au message qui contient la valeur courante de l'horloge du diagramme
         - envoie ensuite le message au HistAgt du diagramme
 
-#### HistAgt [DiaCt] :
+#### HistAgt :
 - agent chargé de stocker l'historique des modifications du diagramme
 
 ###### Comportements :
@@ -118,8 +128,7 @@
     - comportement cyclique qui, à la réception d'un message INFORM (venant du ClockAgt) :
         - si le type de la requête initiale était `PUT`, `POST` ou `DELETE`, ajoute le contenu du message à la liste des modifications
         - si le message contient un champ `last-clock` et que sa valeur est supérieure à l'horloge la première modification encore stockée dans la liste des modifications, renvoie la liste des modifications appliquée depuis celle portant l'horloge `last-clock`
-        - sinon envoie un message au DiaAgt pour récupérer la description complète du diagramme en ajoutant un champ reply-to vers le RestAgt
-
+        - sinon envoie un message au DiaAgt pour récupérer la description complète du diagramme en ajoutant un champ `reply-to` vers le RestAgt
 
 ---
 
@@ -129,21 +138,53 @@
     - les champs décrits ci-dessous n'appartenant pas au format ACL sont des champs de ce dictionnaire
 - conversation-id : id unique généré pour chaque requête REST
 
-#### RestAgt + RestServer --> DiaAgt :
+#### RestAgt :
 - performatif : `REQUEST`
+- destinataires : DiaAgt
+- reply-to : ClockAgt
 - type : `PUT`, `GET`, `DELETE` ou `POST` dépendant du type de la requête REST initiale
 - path : chemin du diagramme/élément visé par la requête
 - properties : liste des propriétés et de leurs valeurs dans le cas d'une modification/création d'un élément
 - properties-list : liste des propriétés à supprimer au sein d'un élément
+- last-clock : dernière horloge reçue par le client si spécifiée dans la requête REST
 
-#### DiaAgt --> RestAgt + RestServer :
-- status : `KO` si une erreur est survenue durant le traitement de la requête, `OK` sinon
-
+#### DiaAgt :
 ###### Succès :
 - performatif : `INFORM`
-- le contenu du message est celui de la requête, plus les éventuels champs suivants
-- description : description récursive des propriétés et éléments d'un diagramme/élément
+- status : `OK`
+- destinataires : valeur du champ `reply-to`, ou `sender` si le premier est inexistant
+- le contenu du message est celui de la requête, plus les éventuels champs suivants :
+    - description : description récursive des propriétés et éléments d'un diagramme/élément
 
 ###### Erreur :
 - performatif : `FAILURE`
+- status : `KO`
+- destinataires : valeur du champ `sender` (le `reply-to` est ignoré)
 - error : message d'erreur
+
+#### SaveAgt :
+- performatif : `REQUEST`
+- destinataires : tous les DiaAgt
+- type : `GET`
+- path : [] (liste vide --> retourne la description complète du diagramme)
+
+#### ClockAgt :
+- performatif : `INFORM`
+- destinataires : HistAgt
+- le contenu du message est le même que celui du message reçu plus un champ `clock` contenant la valeur de l'horloge logique du diagramme
+
+#### HistAgt
+###### --> RestAgt :
+- performatif : `INFORM`
+- destinataires : RestAgt
+- status : `OK`
+- clock : valeur de l'horloge logique insérée dans le contenu du message par le ClockAgt
+- modification-list : liste des modifications appliquées au diagramme depuis l'horloge `last-clock` spécifiée par le client
+
+###### --> DiaAgt :
+- performatif : `INFORM`
+- destinataires : DiaAgt
+- reply-to : RestAgt
+- type : `GET`
+- path : [] (liste vide --> retourne la description complète du diagramme)
+- clock : valeur de l'horloge logique insérée dans le contenu du message par le ClockAgt
