@@ -166,7 +166,7 @@
 - performatif : `REQUEST`
 - destinataires : tous les DiaAgt
 - type : `GET`
-- path : [] (liste vide --> retourne la description complète du diagramme)
+- path : `[]` (liste vide --> retourne la description complète du diagramme)
 
 #### ClockAgt :
 - performatif : `INFORM`
@@ -186,5 +186,5 @@
 - destinataires : DiaAgt
 - reply-to : RestAgt
 - type : `GET`
-- path : [] (liste vide --> retourne la description complète du diagramme)
+- path : `[]` (liste vide --> retourne la description complète du diagramme)
 - clock : valeur de l'horloge logique insérée dans le contenu du message par le ClockAgt
