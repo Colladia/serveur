@@ -10,7 +10,7 @@
     - `type` : type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
     - `clock` : horloge logique de la dernière modification du diagramme
 - input :
-    - `last-clock` : dernière horloge logique reçue par le client ayant envoyé la requête (optionel)
+    - `last-clock` : dernière horloge logique reçue par le client ayant envoyé la requête (optionnel)
 
 #### Remarques :
 - les sorties présentées ci-dessous sont celles des modifications apportées au diagramme et pas le retour de la requête REST
@@ -55,21 +55,24 @@
 ---
 
 ## Description :
-#### RestAgt + RestServer :
+#### RestAgt + RestServer [MainCt] :
 - chargé de récupérer et de traiter les requêtes REST
     - les requêtes sont ensuite transférées sous forme d'ACLMessage au DiaAgt correspondant si besoin
-- création des nouveaux diagrammes
+- création des nouveaux diagrammes (DiaAgt + ClockAgt + HistAgt)
 - liste des diagrammes disponibles
 
 ###### Comportements :
 - RestServer :
     - != comportement JADE
-    - attente d'une requête d'un client
+    - attente d'une requête client puis :
+        - création d'un diagramme ou liste des diagrammes disponibles
+        - ou envoie d'un message vers le DiaAgt correspondant pour exécution de la requête
+            - le message est envoyé avec un champ reply-to indiquant le ClockAgt du diagramme
 - ReceiveBhv :
     - après envoi d'une requête à un DiaAgt, attente de la réponse
-    - après reception de la réponse et traitement, le résultat est envoyé au client REST
+    - après réception de la réponse et traitement, le résultat est envoyé au client REST
 
-#### DiaAgt :
+#### DiaAgt [DiaCt] :
 - stocke l'état courant d'un diagramme
 - pour l'instant, les différents éléments, sous-éléments, etc. sont stockés dans une structure récursive
 - implémente les fonctions de recherche, ajout, suppression, modification etc. d'éléments
@@ -82,14 +85,41 @@
 - différent de DiaAgt ?
 - TODO
 
-#### SaveAgt :
-- TODO
+#### SaveAgt [MainCt] :
+- agent responsable de la sauvegarde et de la restauration des diagrammes du serveur après redémarrage
+- chaque diagramme est sauvegardé dans un fichier au format JSON
 
-#### ClockAgt :
-- TODO
+###### Comportements :
+- RestoreBhv :
+    - comportement one-shot lancé au démarrage de l'agent
+    - à partir des fichiers sauvegardés, créer les différents diagrammes (DiaAgt + ClockAgt + HistAgt) et envoie un message au nouveau DiaAgt pour restaurer la valeur des différents éléments
+    - une fois terminé, lance le TickerBhv et le ReceiveBhv
+- TickerBhv :
+    - comportement qui envoie régulièrement un message à tous les DiaAgt leur demandant de communiquer leur description complète
+- ReceiveBhv :
+    - comportement cyclique chargé de récupérer les réponses des DiaAgt aux messages envoyé par le TickerBhv
+    - à la réception de la description d'un diagramme, écrit cette dernière dans un fichier .json
 
-#### HistAgt :
-- TODO
+#### ClockAgt [DiaCt] :
+- agent chargé de gérer l'horloge logique d'un diagramme
+
+###### Comportements :
+- ReceiveBhv :
+    - comportement cyclique qui, à la réception d'un message INFORM (venant du DiaAgt) :
+        - incrémente l'horloge logique si le type de la requête initiale était `PUT`, `POST` ou `DELETE`
+        - ajoute un champ `clock` au message qui contient la valeur courante de l'horloge du diagramme
+        - envoie ensuite le message au HistAgt du diagramme
+
+#### HistAgt [DiaCt] :
+- agent chargé de stocker l'historique des modifications du diagramme
+
+###### Comportements :
+- ReceiveBhv :
+    - comportement cyclique qui, à la réception d'un message INFORM (venant du ClockAgt) :
+        - si le type de la requête initiale était `PUT`, `POST` ou `DELETE`, ajoute le contenu du message à la liste des modifications
+        - si le message contient un champ `last-clock` et que sa valeur est supérieure à l'horloge la première modification encore stockée dans la liste des modifications, renvoie la liste des modifications appliquée depuis celle portant l'horloge `last-clock`
+        - sinon envoie un message au DiaAgt pour récupérer la description complète du diagramme en ajoutant un champ reply-to vers le RestAgt
+
 
 ---
 
