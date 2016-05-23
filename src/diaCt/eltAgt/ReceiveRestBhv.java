@@ -28,6 +28,9 @@ public class ReceiveRestBhv extends CyclicBehaviour{
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage message = parentAgt.receive(mt);
         if (message != null) {
+            
+            
+            /**
             try {
                 boolean toDelete = false;
                 ACLMessage reply = message.createReply();
@@ -125,6 +128,7 @@ public class ReceiveRestBhv extends CyclicBehaviour{
                 
                 parentAgt.send(reply);
             }
+            **/
         }
         else{
             block();

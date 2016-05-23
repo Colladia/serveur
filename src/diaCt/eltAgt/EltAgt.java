@@ -15,23 +15,29 @@ import utils.Errors;
 import utils.Services;
 
 public class EltAgt extends Agent {
-    public String diaName = null;
-    public EltAgt parentElt = null;
-    public Map<String, EltAgt> sonsElt = new HashMap<>();
+    public List<String> eltPath = null;
+    public AID parentElt = null;
+    public Map<String, AID> sonsElt = new HashMap<>();
+    public Map<String, String> propertyMap = null;
     
     protected void setup() {
         Object[] args = getArguments();
         
         if (args != null) {
             // normal element
-            parentElt = (EltAgt) args[0];
+            parentElt = (AID) args[0];
+            eltPath = (List<String>) args[1];
+            propertyMap = (Map<String, String>) args[2];
             
             addBehaviour(new ReceiveBhv(this));
         }
         else {
             // root element -> old DiaAgt
-            diaName = getLocalName().substring("DiaAgt-".length());
+            String diaName = getLocalName().substring("DiaAgt-".length());
             Services.registerService(this, Services.DIAGRAM, diaName);
+            
+            eltPath = new ArrayList<>();
+            eltPath.add(diaName);
             
             addBehaviour(new ReceiveRestBhv(this));
         }

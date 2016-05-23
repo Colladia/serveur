@@ -10,8 +10,6 @@ import org.restlet.data.Method;
 import jade.core.Agent;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
-import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
 
 import utils.JSON;
 import utils.Services;
@@ -20,15 +18,10 @@ import utils.Errors;
 import mainCt.restAgt.RestServer;
 
 public class RestAgt extends Agent {
-    public AgentContainer diaContainer = null;
     
     protected void setup() {
         // register
         Services.registerService(this, Services.REST, Services.REST);
-        
-        // retrieve diagram container
-        Object[] args = getArguments();
-        diaContainer = (AgentContainer) args[0];
         
         RestServer.launchServer(this);
     }

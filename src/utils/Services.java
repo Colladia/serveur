@@ -8,7 +8,15 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
+import jade.core.Profile;
+import jade.core.ProfileImpl;
+import jade.core.Runtime;
+import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
+import jade.wrapper.ContainerController;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +28,10 @@ public class Services {
     public static String DIAGRAM = "diagram";
     public static String CLOCK = "clock";
     public static String REST = "REST";
+    
+    private static String DIA_CONF = "diaCt/DiaCt.conf";
+    private static AgentContainer diaContainer = null;
+    private static int count = 0;
     
     // deregister agent
     public static void deregisterService(Agent agent) {
@@ -74,10 +86,23 @@ public class Services {
         return AIDList;
     }
     
-    
+    public static void createDiaContainer() {
+        if (diaContainer == null) {
+            try {
+                // create diagram container
+                Runtime rt = Runtime.instance();
+                Profile diaProfile = new ProfileImpl(DIA_CONF);
+                diaContainer = rt.createAgentContainer(diaProfile);
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
+        }
+    }
     
     // create a new diagram agent
-    public static void addNewDiagram(Agent agent, AgentContainer diaContainer, String diaName) {
+    public static void addNewDiagram(Agent agent, String diaName) {
+        createDiaContainer();
         try {
             getDiagram(agent, diaName);
         }
@@ -96,6 +121,21 @@ public class Services {
             catch (Exception e) {
                 Errors.throwKO("Unable to create diagram '"+diaName+"'");
             }
+        }
+    }
+    
+    // create new diagram element
+    public static AID addNewElement(Agent parentAgt, String eltName, List<String> path, Map<String, String> propertyMap) {
+        createDiaContainer();
+        try {
+            AgentController agentCc = diaContainer.createNewAgent("EltAgt-"+eltName+"-"+count, "diaCt.eltAgt.EltAgt", new Object[]{parentAgt.getAID(), path, propertyMap});
+            count++;
+            agentCc.start();
+            return new AID(eltName, AID.ISLOCALNAME);
+        }
+        catch(Exception e){
+            Errors.throwKO("Unable to create element '"+eltName+"'");
+            return null;
         }
     }
     
