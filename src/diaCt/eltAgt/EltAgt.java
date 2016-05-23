@@ -1,4 +1,4 @@
-package diaCt.diaAgt;
+package diaCt.eltAgt;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -14,20 +14,37 @@ import utils.JSON;
 import utils.Errors;
 import utils.Services;
 
-public class DiaAgt extends Agent {
-    public DiaElt rootElt = new DiaElt(new HashMap<String, String>());
+public class EltAgt extends Agent {
     public String diaName = null;
+    public EltAgt parentElt = null;
+    public Map<String, EltAgt> sonsElt = new HashMap<>();
     
     protected void setup() {
-        diaName = getLocalName().substring("DiaAgt-".length());
-        Services.registerService(this, Services.DIAGRAM, diaName);
+        Object[] args = getArguments();
         
-        addBehaviour(new ReceiveBhv(this));
+        if (args != null) {
+            // normal element
+            parentElt = (EltAgt) args[0];
+            
+            addBehaviour(new ReceiveBhv(this));
+        }
+        else {
+            // root element -> old DiaAgt
+            diaName = getLocalName().substring("DiaAgt-".length());
+            Services.registerService(this, Services.DIAGRAM, diaName);
+            
+            addBehaviour(new ReceiveRestBhv(this));
+        }
     }
     
     protected void takeDown() {
-        Services.deregisterService(this);
+        if (parentElt == null) {
+            // if previously registered cause root element
+            Services.deregisterService(this);
+        }
     }
+    
+    /*
     
     // create a new element and sets its propreties
     public String addNewElement(List<String> path, Map<String, String> propertyMap) {
@@ -89,4 +106,6 @@ public class DiaAgt extends Agent {
         
         elt.propertyMap.putAll(propertyMap);
     }
+    
+    */
 }

@@ -84,7 +84,7 @@ public class Services {
         catch(RuntimeException re) {
             try {
                 // create DiaAgt if it does not exists yet
-                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
+                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.eltAgt.EltAgt", null);
                 agentCc.start();
                 
                 agentCc = diaContainer.createNewAgent("ClockAgt-"+diaName, "diaCt.clockAgt.ClockAgt", null);

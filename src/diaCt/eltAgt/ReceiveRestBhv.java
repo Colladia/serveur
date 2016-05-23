@@ -1,4 +1,4 @@
-package diaCt.diaAgt;
+package diaCt.eltAgt;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -14,13 +14,12 @@ import jade.lang.acl.MessageTemplate;
 
 import utils.JSON;
 import utils.Messaging;
-import utils.Services;
 
-public class ReceiveBhv extends CyclicBehaviour{
+public class ReceiveRestBhv extends CyclicBehaviour{
 
-    private DiaAgt parentAgt;
+    private EltAgt parentAgt;
 
-    public ReceiveBhv(DiaAgt parentAgt) {
+    public ReceiveRestBhv(EltAgt parentAgt) {
         this.parentAgt = parentAgt;
     }
 
@@ -44,7 +43,8 @@ public class ReceiveBhv extends CyclicBehaviour{
                 
                     Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
                     
-                    String desc = parentAgt.addNewElement(path, propertyMap);
+                    //String desc = parentAgt.addNewElement(path, propertyMap);
+                    String desc = "";
                     
                     map.put(Messaging.PROPERTIES, desc);
                     
@@ -56,7 +56,8 @@ public class ReceiveBhv extends CyclicBehaviour{
                     List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
                     List<String> path = completePath.subList(1, completePath.size());
                     
-                    String desc = parentAgt.getElementDescription(path);
+                    //String desc = parentAgt.getElementDescription(path);
+                    String desc = "";
                     
                     map.put(Messaging.DESCRIPTION, desc);
                     reply.setContent(JSON.serializeStringMap(map));
@@ -69,7 +70,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     
                     if (map.containsKey(Messaging.PROPERTIES_LIST)) {
                         // remove properties
-                        parentAgt.rmProperties(path, JSON.deserializeStringList(map.get(Messaging.PROPERTIES_LIST)));
+                        //parentAgt.rmProperties(path, JSON.deserializeStringList(map.get(Messaging.PROPERTIES_LIST)));
                     }
                     else {
                         // remove diagram/element
@@ -78,7 +79,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                         }
                         else {
                             // remove element
-                            parentAgt.rmElement(path);
+                            //parentAgt.rmElement(path);
                         }
                     }
                     
@@ -90,7 +91,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     List<String> completePath = JSON.deserializeStringList(map.get(Messaging.PATH));
                     List<String> path = completePath.subList(1, completePath.size());
                     
-                    parentAgt.chProperties(path, JSON.deserializeStringMap(map.get(Messaging.PROPERTIES)));
+                    //parentAgt.chProperties(path, JSON.deserializeStringMap(map.get(Messaging.PROPERTIES)));
                     
                     reply.setContent(JSON.serializeStringMap(map));
                 }
@@ -99,10 +100,10 @@ public class ReceiveBhv extends CyclicBehaviour{
                 else if (map.get(Messaging.TYPE).equals(Messaging.TYPE_RESTORE)) {
                     // restore
                     Map<String, String> description = JSON.deserializeStringMap(map.get(Messaging.DESCRIPTION));
-                    parentAgt.rootElt.restoreElements(description);
+                    //parentAgt.rootElt.restoreElements(description);
                     
                     // get and return new complete description
-                    map.put(Messaging.DESCRIPTION, parentAgt.getElementDescription(new ArrayList<>()));
+                    //map.put(Messaging.DESCRIPTION, parentAgt.getElementDescription(new ArrayList<>()));
                     reply.setContent(JSON.serializeStringMap(map));
                 }
                 
@@ -129,7 +130,4 @@ public class ReceiveBhv extends CyclicBehaviour{
             block();
         }
     }
-
-
-
 }
