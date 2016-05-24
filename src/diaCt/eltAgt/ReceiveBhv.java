@@ -85,6 +85,58 @@ public class ReceiveBhv extends CyclicBehaviour{
                     }
                 }
                 
+                // DELETE : remove the entire diagram, an element and its sub-elements or some properties
+                else if (map.get(Messaging.TYPE).equals(Method.DELETE.toString())) {
+                    if (map.containsKey(Messaging.PROPERTIES_LIST)) {
+                        // remove properties in propertyMap or transfer to son
+                        if (parentAgt.eltPath.size() >= path.size()) {
+                            List<String> propertiesToRemove = JSON.deserializeStringList(map.get(Messaging.PROPERTIES_LIST));
+                            for (String p : propertiesToRemove) {
+                                parentAgt.propertyMap.remove(p);
+                            }
+                            toReply = true;
+                        }
+                        else {
+                            toTransfer = true;
+                        }
+                    }
+                    else {
+                        if (parentAgt.eltPath.size() >= path.size()) {
+                            // delete current element and transfer to every son
+                            toDelete = true;
+                            
+                            message.clearAllReceiver();
+                            for (AID son : parentAgt.sonsElt.values()) {
+                                message.addReceiver(son);
+                            }
+                            parentAgt.send(message);
+                            
+                            // if target of the delete request -> send the reply
+                            if (parentAgt.eltPath.size() == path.size()) {
+                                toReply = true;
+                            }
+                        }
+                        else {
+                            // transfer to son
+                            String nextElt = path.get(parentAgt.eltPath.size()); // next element in path
+                            if (parentAgt.sonsElt.containsKey(nextElt)) {
+                                // transfer to the next son of the path
+                                message.clearAllReceiver();
+                                message.addReceiver(parentAgt.sonsElt.get(nextElt));
+                                parentAgt.send(message);
+                            }
+                            else {
+                                Errors.throwKO("Element '"+nextElt+"' does not exists in '"+String.join("/", parentAgt.eltPath)+"'");
+                            }
+                            
+                            // delete link if parent of element to be deleted
+                            if (parentAgt.eltPath.size() == path.size()-1) {
+                                parentAgt.sonsElt.remove(nextElt );
+                            }
+                        }
+                    }
+                }
+                
                 if (toTransfer) {
                     String nextElt = path.get(parentAgt.eltPath.size()); // next element in path
                     if (parentAgt.sonsElt.containsKey(nextElt)) {
