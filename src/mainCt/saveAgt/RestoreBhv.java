@@ -50,7 +50,7 @@ public class RestoreBhv extends OneShotBehaviour{
                         }
                         
                         // create the diagram
-                        Services.addNewDiagram(parentAgt, parentAgt.diaContainer, diaName);
+                        Services.addNewDiagram(parentAgt, diaName);
                         
                         // restore its elements
                         boolean done = false;

@@ -86,7 +86,7 @@ public class RestServer extends ServerResource {
             
             if (splitPath.size() == 1) {
                 // create new diagram
-                Services.addNewDiagram(restAgt, restAgt.diaContainer, splitPath.get(0));
+                Services.addNewDiagram(restAgt, splitPath.get(0));
                 Map<String, String> map = new HashMap<>();
                 map.put(Messaging.TYPE, Method.PUT.toString());
                 map.put(Messaging.PATH, JSON.serializeStringList(splitPath));

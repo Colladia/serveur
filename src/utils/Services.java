@@ -8,7 +8,15 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
+import jade.core.Profile;
+import jade.core.ProfileImpl;
+import jade.core.Runtime;
+import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
+import jade.wrapper.ContainerController;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +28,9 @@ public class Services {
     public static String DIAGRAM = "diagram";
     public static String CLOCK = "clock";
     public static String REST = "REST";
+    
+    private static String DIA_CONF = "diaCt/DiaCt.conf";
+    private static AgentContainer diaContainer = null;
     
     // deregister agent
     public static void deregisterService(Agent agent) {
@@ -74,17 +85,33 @@ public class Services {
         return AIDList;
     }
     
-    
+    // create the diagram container if it does not already exists
+    public static void createDiaContainer() {
+        if (diaContainer == null) {
+            try {
+                // create diagram container
+                Runtime rt = Runtime.instance();
+                Profile diaProfile = new ProfileImpl(DIA_CONF);
+                diaContainer = rt.createAgentContainer(diaProfile);
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
+        }
+    }
     
     // create a new diagram agent
-    public static void addNewDiagram(Agent agent, AgentContainer diaContainer, String diaName) {
+    public static void addNewDiagram(Agent agent, String diaName) {
+        createDiaContainer();
+        boolean alreadyExists = false;
         try {
             getDiagram(agent, diaName);
+            alreadyExists = true;
         }
         catch(RuntimeException re) {
             try {
                 // create DiaAgt if it does not exists yet
-                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.diaAgt.DiaAgt", null);
+                AgentController agentCc = diaContainer.createNewAgent("DiaAgt-"+diaName, "diaCt.eltAgt.EltAgt", null);
                 agentCc.start();
                 
                 agentCc = diaContainer.createNewAgent("ClockAgt-"+diaName, "diaCt.clockAgt.ClockAgt", null);
@@ -96,6 +123,25 @@ public class Services {
             catch (Exception e) {
                 Errors.throwKO("Unable to create diagram '"+diaName+"'");
             }
+        }
+        
+        if (alreadyExists) {
+            Errors.throwKO("Diagram '"+diaName+"' already exists");
+        }
+    }
+    
+    // create new diagram element
+    public static AID addNewElement(Agent parentAgt, List<String> path, Map<String, String> propertyMap) {
+        createDiaContainer();
+        String eltName = "EltAgt-"+String.join("/", path);
+        try {
+            AgentController agentCc = diaContainer.createNewAgent(eltName, "diaCt.eltAgt.EltAgt", new Object[]{parentAgt.getAID(), path, propertyMap});
+            agentCc.start();
+            return new AID(eltName, AID.ISLOCALNAME);
+        }
+        catch(Exception e){
+            Errors.throwKO("Unable to create element '"+eltName+"'");
+            return null;
         }
     }
     
