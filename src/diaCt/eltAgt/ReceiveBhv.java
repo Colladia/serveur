@@ -34,10 +34,13 @@ public class ReceiveBhv extends CyclicBehaviour{
             try {
                 boolean toDelete = false;
                 boolean toReply = false;
-                boolean toTransfer = false;
+                boolean toForward = false;
                 
                 Map<String, String> map = JSON.deserializeStringMap(message.getContent());
-                List<String> path = JSON.deserializeStringList(map.get(Messaging.PATH));
+                List<String> path = null;
+                if (map.containsKey(Messaging.PATH)) {
+                    path = JSON.deserializeStringList(map.get(Messaging.PATH));
+                }
                 
                 // PUT : add new element
                 if (map.get(Messaging.TYPE).equals(Method.PUT.toString())) {
@@ -55,14 +58,14 @@ public class ReceiveBhv extends CyclicBehaviour{
                         }
                     }
                     else if (parentAgt.eltPath.size() < path.size()-1) {
-                        toTransfer = true;
+                        toForward = true;
                     }
                 }
                 
                 // GET : get recursive element description
                 else if (map.get(Messaging.TYPE).equals(Method.GET.toString())) {
                     if (parentAgt.eltPath.size() < path.size()) {
-                        toTransfer = true;
+                        toForward = true;
                     }
                     else {
                         if (parentAgt.sonsElt.size() == 0) {
@@ -88,7 +91,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                 // DELETE : remove the entire diagram, an element and its sub-elements or some properties
                 else if (map.get(Messaging.TYPE).equals(Method.DELETE.toString())) {
                     if (map.containsKey(Messaging.PROPERTIES_LIST)) {
-                        // remove properties in propertyMap or transfer to son
+                        // remove properties in propertyMap or forward to son
                         if (parentAgt.eltPath.size() >= path.size()) {
                             List<String> propertiesToRemove = JSON.deserializeStringList(map.get(Messaging.PROPERTIES_LIST));
                             for (String p : propertiesToRemove) {
@@ -97,12 +100,12 @@ public class ReceiveBhv extends CyclicBehaviour{
                             toReply = true;
                         }
                         else {
-                            toTransfer = true;
+                            toForward = true;
                         }
                     }
                     else {
                         if (parentAgt.eltPath.size() >= path.size()) {
-                            // delete current element and transfer to every son
+                            // delete current element and forward to every son
                             toDelete = true;
                             
                             message.clearAllReceiver();
@@ -117,10 +120,10 @@ public class ReceiveBhv extends CyclicBehaviour{
                             }
                         }
                         else {
-                            // transfer to son
+                            // forward to son
                             String nextElt = path.get(parentAgt.eltPath.size()); // next element in path
                             if (parentAgt.sonsElt.containsKey(nextElt)) {
-                                // transfer to the next son of the path
+                                // forward to the next son of the path
                                 message.clearAllReceiver();
                                 message.addReceiver(parentAgt.sonsElt.get(nextElt));
                                 parentAgt.send(message);
@@ -145,14 +148,49 @@ public class ReceiveBhv extends CyclicBehaviour{
                         toReply = true;
                     }
                     else {
-                        toTransfer = true;
+                        toForward = true;
                     }
                 }
                 
-                if (toTransfer) {
+                // TYPE_RESTORE : restore the states of the elements from a description
+                else if (map.get(Messaging.TYPE).equals(Messaging.TYPE_RESTORE)) {
+                    Map<String, String> description = JSON.deserializeStringMap(map.get(Messaging.DESCRIPTION));
+                    
+                    for (String key : description.keySet()) {
+                        String value = description.get(key);
+                        if (JSON.isJSONObject(value)) {
+                            // it's a sub-element
+                            // create the new eltAgt
+                            List<String> newPath = new ArrayList<>(parentAgt.eltPath);
+                            newPath.add(key);
+                            
+                            AID newElt = Services.addNewElement(parentAgt, newPath, new HashMap<>());
+                            parentAgt.sonsElt.put(key, newElt);
+                            
+                            // and ask him to restore
+                            ACLMessage restoreMessage = new ACLMessage(ACLMessage.REQUEST);
+                            
+                            restoreMessage.addReceiver(newElt);
+                            
+                            Map<String, String> newMap = new HashMap<>();
+                            newMap.put(Messaging.DESCRIPTION, value);
+                            newMap.put(Messaging.TYPE, Messaging.TYPE_RESTORE);
+                            
+                            restoreMessage.setContent(JSON.serializeStringMap(newMap));
+                            parentAgt.send(restoreMessage);
+                        }
+                        else {
+                            // it's a property
+                            parentAgt.propertyMap.put(key, value);
+                        }
+                    }
+                }
+                
+                // delete agent, forward or reply to message
+                if (toForward) {
                     String nextElt = path.get(parentAgt.eltPath.size()); // next element in path
                     if (parentAgt.sonsElt.containsKey(nextElt)) {
-                        // transfer to the next son of the path
+                        // forward to the next son of the path
                         message.clearAllReceiver();
                         message.addReceiver(parentAgt.sonsElt.get(nextElt));
                         parentAgt.send(message);

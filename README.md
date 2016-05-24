@@ -1,6 +1,6 @@
 # Colladia
 
-## Interface :
+## Interface REST :
 
 #### Général :
 - entrées/sorties communes à tous les requêtes/modifications
@@ -163,6 +163,13 @@
 - error : message d'erreur
 
 #### SaveAgt :
+###### Au démarrage (restoration):
+- performatif : `REQUEST`
+- destinataires : tous les DiaAgt (une fois créés)
+- type : `RESTORE`
+- description : description recursive des propriétés du diagramme et de ses éléments
+
+###### À chaque tick :
 - performatif : `REQUEST`
 - destinataires : tous les DiaAgt
 - type : `GET`

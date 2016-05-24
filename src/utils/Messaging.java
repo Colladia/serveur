@@ -30,7 +30,7 @@ public class Messaging {
     
     /* REQUEST TYPE */
     // org.restlet.data.Method for PUT, POST, GET and DELETE
-    public static String TYPE_RESTORE = "restore"; // new type for query to diaAgt for restoring from a complete description
+    public static String TYPE_RESTORE = "RESTORE"; // new type for query to diaAgt for restoring from a complete description
     
     /* STATUS */
     public static String OK = "OK";
