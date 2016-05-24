@@ -137,6 +137,18 @@ public class ReceiveBhv extends CyclicBehaviour{
                     }
                 }
                 
+                // POST : modify properties of an element
+                else if (map.get(Messaging.TYPE).equals(Method.POST.toString())) {
+                    if (parentAgt.eltPath.size() == path.size()) {
+                        Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
+                        parentAgt.propertyMap.putAll(propertyMap);
+                        toReply = true;
+                    }
+                    else {
+                        toTransfer = true;
+                    }
+                }
+                
                 if (toTransfer) {
                     String nextElt = path.get(parentAgt.eltPath.size()); // next element in path
                     if (parentAgt.sonsElt.containsKey(nextElt)) {
