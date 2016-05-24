@@ -42,6 +42,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                 // write description to a file
                 try {
                     PrintWriter writer = new PrintWriter(new File(parentAgt.SAVE_DIR+"/"+diaName+".json"), "UTF8");
+                    
                     writer.println(map.get(Messaging.DESCRIPTION));
                     writer.close();
                 }

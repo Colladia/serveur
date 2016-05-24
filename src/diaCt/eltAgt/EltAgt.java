@@ -18,7 +18,7 @@ public class EltAgt extends Agent {
     public List<String> eltPath = null;
     public AID parentElt = null;
     public Map<String, AID> sonsElt = new HashMap<>();
-    public Map<String, String> propertyMap = null;
+    public Map<String, String> propertyMap = new HashMap<>();
     
     protected void setup() {
         Object[] args = getArguments();
@@ -27,9 +27,7 @@ public class EltAgt extends Agent {
             // normal element
             parentElt = (AID) args[0];
             eltPath = (List<String>) args[1];
-            propertyMap = (Map<String, String>) args[2];
-            
-            addBehaviour(new ReceiveBhv(this));
+            propertyMap.putAll((Map<String, String>) args[2]);
         }
         else {
             // root element -> old DiaAgt
@@ -38,9 +36,8 @@ public class EltAgt extends Agent {
             
             eltPath = new ArrayList<>();
             eltPath.add(diaName);
-            
-            addBehaviour(new ReceiveRestBhv(this));
         }
+        addBehaviour(new ReceiveBhv(this));
     }
     
     protected void takeDown() {

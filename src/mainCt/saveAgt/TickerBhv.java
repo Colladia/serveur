@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
+import java.util.UUID;
 
 import utils.JSON;
 import utils.Services;
@@ -57,6 +58,7 @@ public class TickerBhv extends TickerBehaviour{
         
         // send message to get description of every diagram
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.setConversationId(UUID.randomUUID().toString());
         
         for (AID i : diagramList) {
             message.addReceiver(i);

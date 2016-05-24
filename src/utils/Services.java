@@ -31,7 +31,6 @@ public class Services {
     
     private static String DIA_CONF = "diaCt/DiaCt.conf";
     private static AgentContainer diaContainer = null;
-    private static int count = 0;
     
     // deregister agent
     public static void deregisterService(Agent agent) {
@@ -86,6 +85,7 @@ public class Services {
         return AIDList;
     }
     
+    // create the diagram container if it does not already exists
     public static void createDiaContainer() {
         if (diaContainer == null) {
             try {
@@ -103,8 +103,10 @@ public class Services {
     // create a new diagram agent
     public static void addNewDiagram(Agent agent, String diaName) {
         createDiaContainer();
+        boolean alreadyExists = false;
         try {
             getDiagram(agent, diaName);
+            alreadyExists = true;
         }
         catch(RuntimeException re) {
             try {
@@ -122,14 +124,18 @@ public class Services {
                 Errors.throwKO("Unable to create diagram '"+diaName+"'");
             }
         }
+        
+        if (alreadyExists) {
+            Errors.throwKO("Diagram '"+diaName+"' already exists");
+        }
     }
     
     // create new diagram element
-    public static AID addNewElement(Agent parentAgt, String eltName, List<String> path, Map<String, String> propertyMap) {
+    public static AID addNewElement(Agent parentAgt, List<String> path, Map<String, String> propertyMap) {
         createDiaContainer();
+        String eltName = "EltAgt-"+String.join("/", path);
         try {
-            AgentController agentCc = diaContainer.createNewAgent("EltAgt-"+eltName+"-"+count, "diaCt.eltAgt.EltAgt", new Object[]{parentAgt.getAID(), path, propertyMap});
-            count++;
+            AgentController agentCc = diaContainer.createNewAgent(eltName, "diaCt.eltAgt.EltAgt", new Object[]{parentAgt.getAID(), path, propertyMap});
             agentCc.start();
             return new AID(eltName, AID.ISLOCALNAME);
         }
