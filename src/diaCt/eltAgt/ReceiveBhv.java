@@ -209,7 +209,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                     ACLMessage reply = message.createReply();
                     reply.setPerformative(ACLMessage.INFORM);
                     
-                    map.put(Messaging.STATUS, Errors.SUCCESS);
+                    map.put(Messaging.STATUS, Errors.OK);
                     reply.setContent(JSON.serializeStringMap(map));
                     
                     parentAgt.send(reply);

@@ -8,7 +8,7 @@ import utils.Messaging;
 
 public class Errors {
     // Success: 2xx
-    public static String SUCCESS = "200";
+    public static String OK = "200";
     
     // Redirection : 3xx
     public static String NOT_MODIFIED = "304";

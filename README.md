@@ -5,12 +5,24 @@
 #### Général :
 - entrées/sorties communes à tous les requêtes/modifications
 - output :
-    - `status` : état de la requête (`KO` ou `OK`)
+    - `status` : code indiquant le statut de la requête (cf ci-dessous)
     - `error` : message d'erreur si `status=KO`
     - `type` : type de la requête initiale (`PUT`, `GET`, `POST` ou `DELETE`)
     - `clock` : horloge logique de la dernière modification du diagramme
 - input :
     - `last-clock` : dernière horloge logique reçue par le client ayant envoyé la requête (optionnel)
+    
+#### Code de statut :
+- succès (2xx) :
+    - 200 : OK
+- redirection (3xx) :
+    - 304 : non modifié
+- erreur client (4xx) :
+    - 400 : requête mal formée
+    - 401 : existe déjà
+    - 404 : non trouvé
+- erreur serveur (5xx) :
+    - 500 : erreur interne
 
 #### Remarques :
 - les sorties présentées ci-dessous sont celles des modifications apportées au diagramme et pas le retour de la requête REST
