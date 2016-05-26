@@ -121,12 +121,12 @@ public class Services {
                 agentCc.start();
             }
             catch (Exception e) {
-                Errors.throwKO("Unable to create diagram '"+diaName+"'");
+                Errors.throwKO("Unable to create diagram '"+diaName+"'", Errors.INTERNAL_ERROR);
             }
         }
         
         if (alreadyExists) {
-            Errors.throwKO("Diagram '"+diaName+"' already exists");
+            Errors.throwKO("Diagram '"+diaName+"' already exists", Errors.EXISTS);
         }
     }
     
@@ -140,7 +140,7 @@ public class Services {
             return new AID(eltName, AID.ISLOCALNAME);
         }
         catch(Exception e){
-            Errors.throwKO("Unable to create element '"+eltName+"'");
+            Errors.throwKO("Unable to create element '"+eltName+"'", Errors.INTERNAL_ERROR);
             return null;
         }
     }
@@ -166,7 +166,7 @@ public class Services {
         AID[] services = Services.getAgentsByService(agent, DIAGRAM, diaName);
         
         if (services.length <= 0) {
-            Errors.throwKO("Diagram '"+diaName+"' does not exists");
+            Errors.throwKO("Diagram '"+diaName+"' does not exists", Errors.NOT_FOUND);
         }
 
         return services[0];
@@ -177,7 +177,7 @@ public class Services {
         AID[] services = Services.getAgentsByService(agent, CLOCK, diaName);
         
         if (services.length <= 0) {
-            Errors.throwKO("Clock of diagram '"+diaName+"' does not exists");
+            Errors.throwKO("Clock of diagram '"+diaName+"' does not exists", Errors.NOT_FOUND);
         }
 
         return services[0];
@@ -188,7 +188,7 @@ public class Services {
         AID[] services = Services.getAgentsByService(agent, HISTORY, diaName);
         
         if (services.length <= 0) {
-            Errors.throwKO("History of diagram '"+diaName+"' does not exists");
+            Errors.throwKO("History of diagram '"+diaName+"' does not exists", Errors.NOT_FOUND);
         }
 
         return services[0];

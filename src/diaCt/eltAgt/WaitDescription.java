@@ -51,7 +51,7 @@ public class WaitDescription extends Behaviour{
                 ACLMessage reply = originalMessage.createReply();
                 reply.setPerformative(ACLMessage.INFORM);
                 
-                map.put(Messaging.STATUS, Messaging.OK);
+                map.put(Messaging.STATUS, Errors.SUCCESS);
                 map.put(Messaging.DESCRIPTION, JSON.serializeStringMap(description));
                 reply.setContent(JSON.serializeStringMap(map));
                 

@@ -24,7 +24,7 @@ public class RestUtils {
             query = URLDecoder.decode(query, "UTF8");
         }
         catch (Exception e) {
-            Errors.throwKO("Unable to decode query");
+            Errors.throwKO("Unable to decode query", Errors.INTERNAL_ERROR);
         }
         
         return new Form(query).getValuesMap();
@@ -39,7 +39,7 @@ public class RestUtils {
                 query = URLDecoder.decode(query, "UTF8");
             }
             catch (Exception e) {
-                Errors.throwKO("Unable to decode query");
+                Errors.throwKO("Unable to decode query", Errors.INTERNAL_ERROR);
             }
             
             String[] split1 = query.split("&");
@@ -56,7 +56,7 @@ public class RestUtils {
     public static List<String> getSplitPath(Reference ref) {
         List<String> splitPath = Arrays.asList(ref.getPath().substring(1).split("/"));
         if (splitPath.size() < 1) {
-            Errors.throwKO("No diagram specified");
+            Errors.throwKO("No diagram specified", Errors.BAD_REQUEST);
         }
         return splitPath;
     }

@@ -54,7 +54,7 @@ public class RestAgt extends Agent {
             // do not raise an error if the diagram to remove does not exists
             if (path.size() == 1) {
                 Map<String, String> map = new HashMap<>();
-                map.put(Messaging.STATUS, Messaging.OK);
+                map.put(Messaging.STATUS, Errors.SUCCESS);
                 map.put(Messaging.TYPE, Method.DELETE.toString());
                 map.put(Messaging.PATH, JSON.serializeStringList(path));
                 RestServer.returnQueue.put(queryId, JSON.serializeStringMap(map));

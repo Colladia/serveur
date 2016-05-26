@@ -32,11 +32,6 @@ public class Messaging {
     // org.restlet.data.Method for PUT, POST, GET and DELETE
     public static String TYPE_RESTORE = "RESTORE"; // new type for query to diaAgt for restoring from a complete description
     
-    /* STATUS */
-    public static String OK = "OK";
-    public static String KO = "KO";
-    
-    
     
     // return a message to create new element and sets its propreties
     public static ACLMessage addNewElement(Agent agent, Map<String, String> contentMap, List<String> path, String propertyMapSerialized) {

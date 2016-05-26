@@ -21,6 +21,7 @@ import org.restlet.resource.ServerResource;
 import utils.JSON;
 import utils.Messaging;
 import utils.Services;
+import utils.Errors;
 import mainCt.restAgt.RestAgt;
 import mainCt.restAgt.RestUtils;
 
@@ -90,7 +91,7 @@ public class RestServer extends ServerResource {
                 Map<String, String> map = new HashMap<>();
                 map.put(Messaging.TYPE, Method.PUT.toString());
                 map.put(Messaging.PATH, JSON.serializeStringList(splitPath));
-                map.put(Messaging.STATUS, Messaging.OK);
+                map.put(Messaging.STATUS, Errors.SUCCESS);
                 return JSON.serializeStringMap(map);
             }
             else {
@@ -123,7 +124,7 @@ public class RestServer extends ServerResource {
                 Map<String, String> map = new HashMap<>();
                 map.put(Messaging.TYPE, Method.GET.toString());
                 map.put(Messaging.LIST, JSON.serializeStringList(Services.getDiagramNameList(restAgt)));
-                map.put(Messaging.STATUS, Messaging.OK);
+                map.put(Messaging.STATUS, Errors.SUCCESS);
                 return JSON.serializeStringMap(map);
             }
             else {
