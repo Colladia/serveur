@@ -183,7 +183,7 @@
 #### Général :
 - content : dictionnaire JSON sérialisé
     - les champs décrits ci-dessous n'appartenant pas au format ACL sont des champs de ce dictionnaire
-- conversation-id : id unique généré pour chaque requête REST
+- conversation-id : id unique généré pour chaque requête REST et conservé durant tout le traitement de cette dernière
 
 #### RestAgt :
 - performatif : `REQUEST`
@@ -192,20 +192,24 @@
 - type : `PUT`, `GET`, `DELETE` ou `POST` dépendant du type de la requête REST initiale
 - path : chemin du diagramme/élément visé par la requête
 - properties : liste des propriétés et de leurs valeurs dans le cas d'une modification/création d'un élément
-- properties-list : liste des propriétés à supprimer au sein d'un élément
+- properties-list : liste des propriétés à supprimer au sein d'un élément pour certaines requêtes `DELETE`
 - last-clock : dernière horloge reçue par le client si spécifiée dans la requête REST
 
 #### EltAgt :
+###### --> EltAgt :
+- Les messages envoyés d'un EltAgt vers un autre EltAgt ne sont que des transferts d'une requête initiale reçue.
+- Tous les champs du messages et du contenu sont convervés (incluant le `sender` et le `reply-to`)
+
 ###### Succès :
 - performatif : `INFORM`
-- status : `OK`
+- status : `200`
 - destinataires : valeur du champ `reply-to`, ou `sender` si le premier est inexistant
 - le contenu du message est celui de la requête, plus les éventuels champs suivants :
     - description : description récursive des propriétés et éléments d'un diagramme/élément
 
 ###### Erreur :
 - performatif : `FAILURE`
-- status : `KO`
+- status : un code d'erreur (`3xx`, `4xx` ou `5xx`)
 - destinataires : valeur du champ `sender` (le `reply-to` est ignoré)
 - error : message d'erreur
 
@@ -231,7 +235,7 @@
 ###### --> RestAgt :
 - performatif : `INFORM`
 - destinataires : RestAgt
-- status : `OK`
+- status : `200`
 - clock : valeur de l'horloge logique insérée dans le contenu du message par le ClockAgt
 - modification-list : liste des modifications appliquées au diagramme depuis l'horloge `last-clock` spécifiée par le client
 
