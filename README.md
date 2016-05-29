@@ -117,7 +117,7 @@
             - si l'élément est une feuille :
                 - répond au message en envoyant la liste des propriétés et leurs valeures
             - sinon :
-                - transfert le message à tous les sous-éléments et lance un behaviour WaitDescription pour attendre les réponses
+                - transfert le message à tous les sous-éléments et lance un behaviour WaitDescriptionBhv pour attendre les réponses
     - DELETE :
         - si la requête contient un champ `properties-list` (suppression de propriété) :
             - si l'élément courant est le dernier élément de l'uri :
@@ -138,7 +138,7 @@
             - envoie une réponse à l'expéditeur initiale de la requête
         - sinon :
             - transfert du message au fils correspondant au prochain élément dans l'uri si il existe ou retourne une erreur
-- WaitDescription :
+- WaitDescriptionBhv :
     - après avoir envoyé un message à chaque fils pour obtenir leur description, attend les retours
     - une fois une réponse à chaque message reçu, formule une réponse à l'agent ayant envoyé la requête (EltAgt parent ou ClockAgt à cause du `reply-to`)
 
