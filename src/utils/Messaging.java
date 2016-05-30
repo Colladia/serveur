@@ -27,6 +27,13 @@ public class Messaging {
     public static String CLOCK = "clock"; // field for returned clock
     public static String LAST_CLOCK = "last-clock"; // field for client last received clock
     public static String MODIFICATION_LIST = "modification-list"; // json array of modifications
+    public static String OPTIONS = "options"; // options
+    
+    /* OPTIONS */
+    public static String OPT_AUTOPOS = "auto-positioning";
+    public static String OPT_NOREPLY = "no-reply";
+    public static String OPT_NOHIST = "no-history";
+    public static String OPT_FORCE = "force";
     
     /* REQUEST TYPE */
     // org.restlet.data.Method for PUT, POST, GET and DELETE
@@ -140,4 +147,22 @@ public class Messaging {
         message.setContent(JSON.serializeStringMap(contentMap));
         return message;
     }
+    
+    // return a message to launch an autopositioning algorithm at a given path
+    public static ACLMessage autoPositioning(Agent agent, Map<String, String> contentMap, List<String> path) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        
+        String diaName = path.get(0);
+        message.addReceiver(Services.getDiagram(agent, diaName));
+        
+        if (contentMap == null) {
+            contentMap = new HashMap<>();
+        }
+        contentMap.put(Messaging.TYPE, Method.POST.toString());
+        contentMap.put(Messaging.PATH, JSON.serializeStringList(path));
+        
+        message.setContent(JSON.serializeStringMap(contentMap));
+        return message;
+    }
+    
 }

@@ -187,9 +187,19 @@ public class RestServer extends ServerResource {
             splitPath = RestUtils.getSplitPath(ref);
             String queryId = UUID.randomUUID().toString();
             
-            Map<String, String> propertyMap = JSON.deserializeStringMap(queryMap.get(Messaging.PROPERTIES));
-            queryMap.remove(Messaging.PROPERTIES);
-            restAgt.chProperties(queryId, splitPath, propertyMap, queryMap);
+            if (queryMap.containsKey(Messaging.OPTIONS)) {
+                List<String> options = JSON.deserializeStringList(queryMap.get(Messaging.OPTIONS));
+                if (options.contains(Messaging.OPT_AUTOPOS)) {
+                    // auto-positioning
+                    restAgt.autoPositioning(queryId, splitPath, queryMap);
+                }
+            }
+            else if (queryMap.containsKey(Messaging.PROPERTIES)) {
+                // property modification
+                Map<String, String> propertyMap = JSON.deserializeStringMap(queryMap.get(Messaging.PROPERTIES));
+                queryMap.remove(Messaging.PROPERTIES);
+                restAgt.chProperties(queryId, splitPath, propertyMap, queryMap);
+            }
             
             return waitReply(queryId);
         }

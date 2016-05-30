@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.Math;
 
 import org.restlet.data.Method;
 
@@ -83,7 +84,7 @@ public class ReceiveBhv extends CyclicBehaviour{
                             }
                             parentAgt.send(requestDescMsg);
                             
-                            parentAgt.addBehaviour(new WaitDescription(parentAgt, message, nbReply));
+                            parentAgt.addBehaviour(new WaitDescriptionBhv(parentAgt, message, nbReply));
                         }
                     }
                 }
@@ -143,9 +144,48 @@ public class ReceiveBhv extends CyclicBehaviour{
                 // POST : modify properties of an element
                 else if (map.get(Messaging.TYPE).equals(Method.POST.toString())) {
                     if (parentAgt.eltPath.size() == path.size()) {
-                        Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
-                        parentAgt.propertyMap.putAll(propertyMap);
-                        toReply = true;
+                        if (map.containsKey(Messaging.PROPERTIES)) {
+                            // property modification
+                            Map<String, String> propertyMap = JSON.deserializeStringMap(map.get(Messaging.PROPERTIES));
+                            parentAgt.propertyMap.putAll(propertyMap);
+                            toReply = true;
+                        }
+                        else if (map.containsKey(Messaging.OPTIONS)) {
+                            List<String> options = JSON.deserializeStringList(map.get(Messaging.OPTIONS));
+                            if (options.contains(Messaging.OPT_AUTOPOS)) {
+                                // auto-positioning
+                                String w = parentAgt.getProperty(EltAgt.W);
+                                if (w == null) {
+                                    w = "-1";
+                                }
+                                
+                                String h = parentAgt.getProperty(EltAgt.H);
+                                if (h == null) {
+                                    h = "-1";
+                                }
+                                
+                                // send message to all son with : w, h and an angle
+                                ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+                                cfp.setConversationId(message.getConversationId());
+                                Map<String, String> newMap = new HashMap<>(map);
+                                newMap.put(EltAgt.W, w);
+                                newMap.put(EltAgt.H, h);
+                                cfp.setContent(JSON.serializeStringMap(newMap));
+                                
+                                int n = parentAgt.sonsElt.size();
+                                int i=0;
+                                for (AID son : parentAgt.sonsElt.values()) {
+                                    newMap.put(EltAgt.A, ""+(2*i*Math.PI/n));
+                                    cfp.setContent(JSON.serializeStringMap(newMap));
+                                    cfp.clearAllReceiver();
+                                    cfp.addReceiver(son);
+                                    parentAgt.send(cfp);
+                                    i++;
+                                }
+                                
+                                parentAgt.addBehaviour(new WaitProposalBhv(parentAgt, message, n));
+                            }
+                        }
                     }
                     else {
                         toForward = true;

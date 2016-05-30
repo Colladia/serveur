@@ -29,11 +29,21 @@ public class ReceiveBhv extends CyclicBehaviour{
             boolean toDelete = false;
             Map<String, String> map = JSON.deserializeStringMap(message.getContent());
             
+            boolean toHist = true;
+            if (map.containsKey(Messaging.OPTIONS)) {
+                List<String> options = JSON.deserializeStringList(map.get(Messaging.OPTIONS));
+                if (options.contains(Messaging.OPT_NOHIST)) {
+                    toHist = false;
+                }
+            }
+            
             String type = map.get(Messaging.TYPE);
             
             if (type.equals(Method.PUT.toString()) || type.equals(Method.POST.toString()) || type.equals(Method.DELETE.toString())) {
                 // increment clock if needed
-                parentAgt.clock++;
+                if (toHist) {
+                    parentAgt.clock++;
+                }
                 
                 // if delete diagram message, stop the agent
                 if (type.equals(Method.DELETE.toString()) && map.containsKey(Messaging.PATH)) {

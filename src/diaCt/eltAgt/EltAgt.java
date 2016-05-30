@@ -15,6 +15,12 @@ import utils.Errors;
 import utils.Services;
 
 public class EltAgt extends Agent {
+    public static String X = "x";
+    public static String Y = "y";
+    public static String W = "width";
+    public static String H = "height";
+    public static String A = "angle";
+    
     public List<String> eltPath = null;
     public AID parentElt = null;
     public Map<String, AID> sonsElt = new HashMap<>();
@@ -38,12 +44,22 @@ public class EltAgt extends Agent {
             eltPath.add(diaName);
         }
         addBehaviour(new ReceiveBhv(this));
+        addBehaviour(new ReceiveCFPBhv(this));
     }
     
     protected void takeDown() {
         if (parentElt == null) {
             // if previously registered cause root element
             Services.deregisterService(this);
+        }
+    }
+    
+    protected String getProperty(String name) {
+        if (propertyMap.containsKey(name)) {
+            return propertyMap.get(name);
+        }
+        else {
+            return null;
         }
     }
 }

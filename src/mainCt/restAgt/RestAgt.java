@@ -100,4 +100,16 @@ public class RestAgt extends Agent {
         this.send(msg);
         addBehaviour(new ReceiveBhv(this, queryId));
     }
+    
+    // make an autopositionning request
+    public void autoPositioning(String queryId, List<String> path, Map<String, String> queryMap) {
+        ACLMessage msg = Messaging.autoPositioning(this, queryMap, path);
+        msg.setConversationId(queryId);
+        
+        String diaName = path.get(0);
+        msg.addReplyTo(Services.getClock(this, diaName));
+        
+        this.send(msg);
+        addBehaviour(new ReceiveBhv(this, queryId));
+    }
 }

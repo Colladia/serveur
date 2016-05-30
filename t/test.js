@@ -155,3 +155,26 @@ function onClickPostButton () {
         console.log("KO");
     });
 }
+
+function onClickAutoPosButton () {
+    var path = document.getElementsByName("PostPath")[0].value;
+    var clock = document.getElementsByName("PostClock")[0].value;
+    if (clock=="") {
+        clock="-1"
+    }
+    
+    $.ajax({
+        url: server+path,
+        method: "POST",
+        dataType: "text",
+        contentType: "application/json",
+        data: {"options": "[\"auto-positioning\"]", "last-clock": clock}
+    })
+    .done(function(data) {
+        console.log("OK");
+        document.getElementById("post-zone").innerHTML = data;
+    })
+    .fail(function() {
+        console.log("KO");
+    });
+}
