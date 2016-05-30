@@ -29,6 +29,8 @@ public class ProposeBhv extends Behaviour{
     
     private float curX;
     private float curY;
+    float prevX;
+    float prevY;
     private float w;
     private float h;
     private float pW;
@@ -70,6 +72,14 @@ public class ProposeBhv extends Behaviour{
                 else {
                     curX = pW/2 - w/2;
                 }
+                if (pW >= 0) {
+                    if (curX < 0) {
+                        curX = 0;
+                    }
+                    else if (curX+w > pW) {
+                        curX = pW - w;
+                    }
+                }
                 
                 if (pH < 0) {
                     // unlimited
@@ -77,6 +87,14 @@ public class ProposeBhv extends Behaviour{
                 }
                 else {
                     curY = pH/2 + h/2;
+                }
+                if (pH >= 0) {
+                    if (curY < 0) {
+                        curY = 0;
+                    }
+                    else if (curY+h > pH) {
+                        curY = pH - h;
+                    }
                 }
             }
             toReply = true;
@@ -106,8 +124,29 @@ public class ProposeBhv extends Behaviour{
                     //float clashW = Float.parseFloat(map.get(EltAgt.W));
                     //float clashH = Float.parseFloat(map.get(EltAgt.H));
                     
+                    prevX = curX;
+                    prevY = curY;
+                    
                     curX += ((float) Math.cos(angle)) * STEP;
+                    if (pW >= 0) {
+                        if (curX < 0) {
+                            curX = 0;
+                        }
+                        else if (curX+w > pW) {
+                            curX = pW - w;
+                        }
+                    }
+                    
                     curY += ((float) Math.sin(angle)) * STEP;
+                    if (pH >= 0) {
+                        if (curY < 0) {
+                            curY = 0;
+                        }
+                        else if (curY+h > pH) {
+                            curY = pH - h;
+                        }
+                    }
+                    
                     toReply = true;
                 }
             }
@@ -128,6 +167,14 @@ public class ProposeBhv extends Behaviour{
                 newMap.put(EltAgt.Y, ""+curY);
                 newMap.put(EltAgt.W, ""+w);
                 newMap.put(EltAgt.H, ""+h);
+                
+                if (curX == prevX && curY == prevY) {
+                    // no move made cause reached a corner of the parent
+                    List<String> options = new ArrayList<>();
+                    options.add(Messaging.OPT_FORCE);
+                    newMap.put(Messaging.OPTIONS, JSON.serializeStringList(options));
+                }
+                
                 reply.setContent(JSON.serializeStringMap(newMap));
             }
             parentAgt.send(reply);
