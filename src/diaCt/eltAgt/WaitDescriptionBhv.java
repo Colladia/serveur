@@ -17,7 +17,7 @@ import utils.Messaging;
 import utils.Errors;
 import utils.Services;
 
-public class WaitDescription extends Behaviour{
+public class WaitDescriptionBhv extends Behaviour{
 
     private EltAgt parentAgt;
     private boolean isDone = false;
@@ -25,7 +25,7 @@ public class WaitDescription extends Behaviour{
     private ACLMessage originalMessage;
     private Map<String, String> description;
 
-    public WaitDescription(EltAgt parentAgt, ACLMessage originalMessage, int nbReply) {
+    public WaitDescriptionBhv(EltAgt parentAgt, ACLMessage originalMessage, int nbReply) {
         this.parentAgt = parentAgt;
         this.originalMessage = originalMessage;
         this.nbReply = nbReply;
