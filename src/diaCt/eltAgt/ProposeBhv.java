@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.lang.Float;
 
-//import org.restlet.data.Method;
+import org.restlet.data.Method;
 
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -16,6 +16,7 @@ import jade.lang.acl.MessageTemplate;
 
 import utils.JSON;
 import utils.Messaging;
+import utils.Services;
 
 public class ProposeBhv extends Behaviour{
     public static float STEP = 100;
@@ -137,6 +138,26 @@ public class ProposeBhv extends Behaviour{
     public boolean done() {
         if (isDone) {
             // send message for HistAgt
+            ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+            message.addReceiver(Services.getClock(parentAgt, parentAgt.eltPath.get(0)));
+            
+            Map<String, String> contentMap = new HashMap<>();
+            contentMap.put(Messaging.TYPE, Method.POST.toString());
+            contentMap.put(Messaging.PATH, JSON.serializeStringList(parentAgt.eltPath));
+            
+            Map<String, String> propertyMap = new HashMap<>();
+            propertyMap.put(EltAgt.X, ""+curX);
+            propertyMap.put(EltAgt.Y, ""+curY);
+            contentMap.put(Messaging.PROPERTIES, JSON.serializeStringMap(propertyMap));
+            
+            List<String> options = new ArrayList<>();
+            options.add(Messaging.OPT_AUTOPOS);
+            options.add(Messaging.OPT_NOREPLY);
+            contentMap.put(Messaging.OPTIONS, JSON.serializeStringList(options));
+            
+            message.setContent(JSON.serializeStringMap(contentMap));
+            
+            parentAgt.send(message);
         }
         
         return isDone;
