@@ -12,7 +12,7 @@ import jade.lang.acl.ACLMessage;
 import utils.Services;
 
 public class HistAgt extends Agent {
-    public static int MOD_SIZE = 100;
+    public static int MOD_SIZE = 5000;
     
     public String diaName = null;
     public List<String> modifications = new ArrayList<>();
