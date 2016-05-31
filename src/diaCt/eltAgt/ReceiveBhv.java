@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
+import java.lang.Float;
 
 import org.restlet.data.Method;
 
@@ -158,14 +159,18 @@ public class ReceiveBhv extends CyclicBehaviour{
                             List<String> options = JSON.deserializeStringList(map.get(Messaging.OPTIONS));
                             if (options.contains(Messaging.OPT_AUTOPOS)) {
                                 // auto-positioning
-                                String w = parentAgt.getProperty(EltAgt.W);
-                                if (w == null) {
-                                    w = "-1";
+                                String xMax = parentAgt.getProperty(EltAgt.XMAX);
+                                String xMin = parentAgt.getProperty(EltAgt.XMIN);
+                                String w = "-1";
+                                if (xMax!=null && xMin!=null) {
+                                    w = ""+(Float.parseFloat(xMax)-Float.parseFloat(xMin));
                                 }
                                 
-                                String h = parentAgt.getProperty(EltAgt.H);
-                                if (h == null) {
-                                    h = "-1";
+                                String yMax = parentAgt.getProperty(EltAgt.YMAX);
+                                String yMin = parentAgt.getProperty(EltAgt.YMIN);
+                                String h = "-1";
+                                if (yMax!=null && yMin!=null) {
+                                    h = ""+(Float.parseFloat(yMax)-Float.parseFloat(yMin));
                                 }
                                 
                                 // send message to all son with : w, h and an angle

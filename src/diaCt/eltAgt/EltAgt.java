@@ -15,6 +15,13 @@ import utils.Errors;
 import utils.Services;
 
 public class EltAgt extends Agent {
+    /* CLIENT FIELD NAMES */
+    public static String XMAX = "xMax";
+    public static String YMAX = "yMax";
+    public static String XMIN = "xMin";
+    public static String YMIN = "yMin";
+    
+    /* SERVER MESSAGES FIELD NAMES */
     public static String X = "x";
     public static String Y = "y";
     public static String W = "width";

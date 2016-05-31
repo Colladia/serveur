@@ -53,11 +53,11 @@ public class ProposeBhv extends Behaviour{
         boolean toReply = false;
         if (!init) {
             // check if valid element for auto-positioning
-            if (parentAgt.getProperty(EltAgt.X)!=null && parentAgt.getProperty(EltAgt.Y)!=null && parentAgt.getProperty(EltAgt.W)!=null && parentAgt.getProperty(EltAgt.H)!=null) {
-                curX = Float.parseFloat(parentAgt.getProperty(EltAgt.X));
-                curY = Float.parseFloat(parentAgt.getProperty(EltAgt.Y));
-                w = Float.parseFloat(parentAgt.getProperty(EltAgt.W));
-                h = Float.parseFloat(parentAgt.getProperty(EltAgt.H));
+            if (parentAgt.getProperty(EltAgt.XMIN)!=null && parentAgt.getProperty(EltAgt.YMIN)!=null && parentAgt.getProperty(EltAgt.XMAX)!=null && parentAgt.getProperty(EltAgt.YMAX)!=null) {
+                curX = Float.parseFloat(parentAgt.getProperty(EltAgt.XMIN));
+                curY = Float.parseFloat(parentAgt.getProperty(EltAgt.YMIN));
+                w = Float.parseFloat(parentAgt.getProperty(EltAgt.XMAX)) - Float.parseFloat(parentAgt.getProperty(EltAgt.XMIN));
+                h = Float.parseFloat(parentAgt.getProperty(EltAgt.YMAX)) - Float.parseFloat(parentAgt.getProperty(EltAgt.YMIN));
             }
             else {
                 toRefuse = true;
@@ -112,8 +112,10 @@ public class ProposeBhv extends Behaviour{
             if (message != null) {
                 if (message.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
                     // change value, send message to history and stop behaviour
-                    parentAgt.propertyMap.put(EltAgt.X, ""+curX);
-                    parentAgt.propertyMap.put(EltAgt.Y, ""+curY);
+                    parentAgt.propertyMap.put(EltAgt.XMIN, ""+curX);
+                    parentAgt.propertyMap.put(EltAgt.YMIN, ""+curY);
+                    parentAgt.propertyMap.put(EltAgt.XMAX, ""+(curX+w));
+                    parentAgt.propertyMap.put(EltAgt.YMAX, ""+(curY+h));
                     isDone = true;
                 }
                 else {
@@ -193,8 +195,10 @@ public class ProposeBhv extends Behaviour{
             contentMap.put(Messaging.PATH, JSON.serializeStringList(parentAgt.eltPath));
             
             Map<String, String> propertyMap = new HashMap<>();
-            propertyMap.put(EltAgt.X, ""+curX);
-            propertyMap.put(EltAgt.Y, ""+curY);
+            propertyMap.put(EltAgt.XMIN, ""+curX);
+            propertyMap.put(EltAgt.YMIN, ""+curY);
+            propertyMap.put(EltAgt.XMAX, ""+(curX+w));
+            propertyMap.put(EltAgt.YMAX, ""+(curY+h));
             contentMap.put(Messaging.PROPERTIES, JSON.serializeStringMap(propertyMap));
             
             List<String> options = new ArrayList<>();
