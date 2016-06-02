@@ -63,6 +63,10 @@
     - uri : `<adrr>/<diagram>[/<element> ...]`
     - input : `properties=<properties to add/modify as json map>`
     - output : `{path:<path as json array>, properties:<properties added/modified as json map>}`
+- auto-positionnement des éléments fils :
+    - uri : `<adrr>/<diagram>[/<element> ...]`
+    - input : `options= "[\"auto-positioning\"]"`
+    - output : une modification par élément respectant le format suivant `{path:<path as json array>, properties:<properties added/modified as json map>}`
 
 ---
 
