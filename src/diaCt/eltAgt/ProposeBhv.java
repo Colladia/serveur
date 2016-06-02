@@ -199,6 +199,8 @@ public class ProposeBhv extends Behaviour{
             propertyMap.put(EltAgt.YMIN, ""+curY);
             propertyMap.put(EltAgt.XMAX, ""+(curX+w));
             propertyMap.put(EltAgt.YMAX, ""+(curY+h));
+            propertyMap.put(EltAgt.ID, parentAgt.getProperty(EltAgt.ID));
+            propertyMap.put(EltAgt.TYPE, parentAgt.getProperty(EltAgt.TYPE));
             contentMap.put(Messaging.PROPERTIES, JSON.serializeStringMap(propertyMap));
             
             List<String> options = new ArrayList<>();

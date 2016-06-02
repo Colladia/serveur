@@ -20,6 +20,8 @@ public class EltAgt extends Agent {
     public static String YMAX = "yMax";
     public static String XMIN = "xMin";
     public static String YMIN = "yMin";
+    public static String TYPE = "type";
+    public static String ID = "id";
     
     /* SERVER MESSAGES FIELD NAMES */
     public static String X = "x";
