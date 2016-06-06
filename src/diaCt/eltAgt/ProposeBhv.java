@@ -83,10 +83,10 @@ public class ProposeBhv extends Behaviour{
                 
                 if (pH < 0) {
                     // unlimited
-                    curY = 0 + h/2;
+                    curY = 0 - h/2;
                 }
                 else {
-                    curY = pH/2 + h/2;
+                    curY = pH/2 - h/2;
                 }
                 if (pH >= 0) {
                     if (curY < 0) {
