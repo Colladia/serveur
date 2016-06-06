@@ -170,7 +170,7 @@ public class ProposeBhv extends Behaviour{
                 newMap.put(EltAgt.W, ""+w);
                 newMap.put(EltAgt.H, ""+h);
                 
-                if (curX == prevX || curY == prevY) {
+                if (curX == prevX && curY == prevY) {
                     // no move made cause reached a corner of the parent
                     List<String> options = new ArrayList<>();
                     options.add(Messaging.OPT_FORCE);
